@@ -1,9 +1,11 @@
-import { useProjectsList } from "./api/weeek/hooks/use-projects-list";
+import { WeekProjectSelectionStep } from "./components/steps/weeek-project-selection-step";
 
 function App() {
-	const { data } = useProjectsList();
-
-	return JSON.stringify(data);
+	return (
+		<div className="px-[100px] py-[50px]">
+			<WeekProjectSelectionStep />
+		</div>
+	);
 }
 
 export default App;
