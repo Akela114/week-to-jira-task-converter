@@ -1,20 +1,19 @@
 import { useJiraProjectsList } from "./api/jira/hooks/use-projects";
-import { useProjectsList } from "./api/weeek/hooks/use-projects-list";
+import { WeekProjectSelectionStep } from "./components/steps/weeek-project-selection-step";
+import { WeekBoardSelectionStep } from "./components/steps/week-board-selection-step";
 
 function App() {
-	const { data } = useProjectsList();
+
 	const { data: jiraData } = useJiraProjectsList();
-	
 
-	return <div>
-		<div className="mb-20">
-			{JSON.stringify(data)}
+	return (
+		<div className="px-[100px] py-[50px]">
+			<div className="space-y-[20px]">
+				<WeekProjectSelectionStep />
+				<WeekBoardSelectionStep />
+			</div>
 		</div>
-		<div>
-			{JSON.stringify(jiraData)}
-		</div>
-
-	</div>
+	);
 }
 
 export default App;

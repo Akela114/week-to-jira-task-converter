@@ -16,7 +16,7 @@ export const ToastContainerProvider: FC<ToastContainerProviderProps> = ({
 
 	return (
 		<>
-			<ToastContainer />
+			<ToastContainer theme="dark" position="bottom-right" icon={false} />
 			{shouldChildrenRender && children}
 		</>
 	);

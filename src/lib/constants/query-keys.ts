@@ -1,3 +1,4 @@
 export const WEEEK_QUERY_KEYS = {
-  projectsList: 'week_projects_list',
+  projectsList: 'weeek_projects_list',
+  boardsList: 'weeek_boards_list',
 }
