@@ -23,10 +23,25 @@ type Project = {
   customFields: ProjectCustomField[];
 }
 
+type Board = {
+  id: number;
+  name: string;
+  projectId: number;
+  isPrivate: boolean;
+}
+
 export type GetProjectsListData = {
   success: false;
   message: string;
 } | {
   success: true;
   projects: Project[];
+}
+
+export type GetBoardListData = {
+  success: false;
+  message: string;
+} | {
+  success: true;
+  boards: Board[];
 }

@@ -15,3 +15,4 @@ export const useProjectsList = () => {
     queryFn: () => withToastMessages(getProjectsList, TOAST_MESSAGES)(),
   });
 };
+

@@ -1,5 +1,5 @@
 import { weeekAPIInstance } from "./instance";
-import type { GetProjectsListData } from "./types";
+import type { GetBoardListData, GetProjectsListData } from "./types";
 
 export const getProjectsList = async () => {
   const { data } =
@@ -11,3 +11,18 @@ export const getProjectsList = async () => {
 
   throw Error(data.message);
 };
+
+export const getBoardList = async ({ projectId }: { projectId: string }) => {
+  const { data } =
+    await weeekAPIInstance.get<GetBoardListData>("/tm/boards", {
+      params: {
+        projectId
+      }
+    });
+
+  if (data.success) {
+    return data;
+  }
+
+  throw Error(data.message);
+}
