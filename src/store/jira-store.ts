@@ -6,6 +6,8 @@ type JiraStore = {
   setSelectedProjectId: (id: string) => void;
   selectedJiraUser?: string;
   setSelectedJiraUser: (id: string) => void;
+  selectedTaskType?: string;
+  setSelectedTypeTasks: (id: string) => void;
 }
 
 export const useJiraStore = create(
@@ -15,6 +17,8 @@ export const useJiraStore = create(
       setSelectedProjectId: (id: string) => set({ selectedProjectId: id }),
       selectedJiraUser: undefined,
       setSelectedJiraUser: (id) => set({ selectedJiraUser: id }),
+      selectedTaskType: undefined,
+      setSelectedTypeTasks: (id) => set({ selectedTaskType: id }),
     }),
     {
       name: 'jira-store'

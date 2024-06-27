@@ -1,7 +1,6 @@
 import { useAddJiraProject } from "@/api/jira/hooks/use-projects";
 import { CustomModal } from "@/shared/ui/custom-modal";
 import { Input } from "@/shared/ui/input";
-import { Label } from "@/shared/ui/label";
 import { useState, type FC } from "react";
 import { Interceptor } from "./interceptor";
 import { useJiraUsers } from "@/api/jira/hooks/use-users";
@@ -23,6 +22,7 @@ interface IModalProps {
 
 export const AddProjectModal: FC<IModalProps> = () => {
 	const [formState, setFormState] = useState({ name: "", key: "" });
+	const [isError, setError] = useState(false);
 
 	const { data, error, status } = useJiraUsers();
 	const { mutateAsync: addProject } = useAddJiraProject();
@@ -43,6 +43,9 @@ export const AddProjectModal: FC<IModalProps> = () => {
 			confirmButtonText="Создать"
 			title="Создать проект"
 			onConfirm={async () => {
+				if (!formState.key || !formState.name || selectedUserId) {
+					return setError(true);
+				}
 				if (selectedUserId) {
 					return await addProject({
 						key: formState.key,
@@ -56,52 +59,55 @@ export const AddProjectModal: FC<IModalProps> = () => {
 			toggleButtonText="Создайте проект"
 		>
 			<div className="grid gap-4 py-4">
-				<div className="grid grid-cols-4 items-center gap-4">
-					<Label htmlFor="name" className="text-right">
-						Название
-					</Label>
-					<Input
-						id="name"
-						className="col-span-3"
-						value={formState.name}
-						onChange={(e) =>
-							setFormState({ ...formState, name: e.target.value })
+				<Input
+					id="name"
+					className="col-span-4"
+					placeholder="Название проекта"
+					value={formState.name}
+					onChange={(e) => {
+						if (isError) {
+							setError(false);
 						}
-					/>
-				</div>
-				<div className="grid grid-cols-4 items-center gap-4">
-					<Label htmlFor="key" className="text-right">
-						KEY
-					</Label>
-					<Input
-						id="key"
-						className="col-span-3"
-						value={formState.key}
-						onChange={(e) =>
-							setFormState({ ...formState, key: e.target.value })
+						setFormState({ ...formState, name: e.target.value });
+					}}
+				/>
+				<Input
+					id="key"
+					className="col-span-4"
+					value={formState.key}
+					placeholder="KEY"
+					onChange={(e) => {
+						if (isError) {
+							setError(false);
 						}
-					/>
-				</div>
+						setFormState({ ...formState, key: e.target.value });
+					}}
+				/>
 				<Interceptor status={status} errorMessage={error?.message}>
-					<div className="grid grid-cols-4 items-center gap-4">
-						<Label htmlFor="username" className="text-right">
-							Руководитель
-						</Label>
+					<div className="col-span-4">
 						<Select
-							onValueChange={setSelectedUser}
+							onValueChange={(value) => {
+								if (isError) {
+									setError(false);
+								}
+								setSelectedUser(value);
+							}}
 							value={
 								data?.some((user) => String(user.accountId) === selectedUserId)
 									? selectedUserId
 									: undefined
 							}
 						>
-							<SelectTrigger className="w-[180px]">
-								<SelectValue placeholder="Выберите проект" />
+							<SelectTrigger className="w-full">
+								<SelectValue placeholder="Выберете руководителя проекта" />
 							</SelectTrigger>
 							<SelectContent>{userSelectOptions}</SelectContent>
 						</Select>
 					</div>
 				</Interceptor>
+				{isError && (
+					<p className="text-red-400 text-xs">Заполнены не все поля</p>
+				)}
 			</div>
 		</CustomModal>
 	);

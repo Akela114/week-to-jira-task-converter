@@ -1,18 +1,12 @@
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
-import { createProject, getProjectsList } from "../fetchers";
+import { createProject, getProjectsList, getStatuses } from "../fetchers";
 import { withToastMessages } from "@/lib/utils/with-toast-messages";
 import { JIRA_QUERY_KEYS } from "@/lib/constants/query-keys";
-
-const TOAST_MESSAGES = {
-  success: "Успешная загрузка информации о проектах из JIRA",
-  error: "Произошла ошибка при загрузке проектов из JIRA",
-  pending: "Загрузка проектов из JIRA...",
-} as const;
 
 export const useJiraProjectsList = () => {
   return useQuery({
     queryKey: [JIRA_QUERY_KEYS.projectsList],
-    queryFn: () => withToastMessages(getProjectsList, TOAST_MESSAGES)(),
+    queryFn: getProjectsList,
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
   });
@@ -35,4 +29,14 @@ export const useAddJiraProject = () => {
       });
     }
   })
+}
+
+export const useStatuses = (projectId: string | undefined) => {
+  return useQuery({
+    queryKey: [JIRA_QUERY_KEYS.projectStatuses, projectId] as const,
+    queryFn: () => (() => getStatuses(projectId as string))(),
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
+    enabled: !!projectId
+  });
 }

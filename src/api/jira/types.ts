@@ -48,4 +48,22 @@ export interface User {
 	key: string
 	name: string
 	self: string
-  }
+}
+
+// statuses
+
+export interface StatusRoot {
+  id: string
+  name: string
+  self: string
+  statuses: Status[]
+  subtask: boolean
+}
+
+export interface Status {
+  description: string
+  iconUrl: string
+  id: string
+  name: string
+  self: string
+}

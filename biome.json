@@ -5,5 +5,16 @@
       "semicolons":"always",
       "quoteStyle": "double"
     }
+  },
+  "linter": {
+    "rules": {
+      "style": {
+        "noUnusedTemplateLiteral": {
+          "level": "error",
+          "fix": "safe"
+        }
+      }
+    }
   }
+
 }
