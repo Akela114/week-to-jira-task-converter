@@ -1,11 +1,14 @@
 import { jiraAPIInstance } from "./instance";
+import type { JiraProject, ProjectCreate } from "./types";
 
 export const getProjectsList = async () => {
-  const { data } = await jiraAPIInstance.get("/project");
+  const { data } = await jiraAPIInstance.get<JiraProject[]>("/project");
 
-  if (data) {
-    return data;
-  }
-
-  throw Error(data.message);
+  return data;
 };
+
+
+export const createProject = async (projectData: ProjectCreate) => {
+  const { data } = await jiraAPIInstance.post('/project', projectData);
+  return data;
+}
