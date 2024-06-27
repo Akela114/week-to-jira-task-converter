@@ -18,11 +18,17 @@ export const useJiraProjectsList = () => {
   });
 };
 
+const TOAST_MESSAGES_CREATE = {
+  success: "Проект в Jira успешно создан",
+  error: "Произошла ошибка добавления проекта ",
+  pending: "Создание проекта...",
+} as const;
+
 export const useAddJiraProject = () => {
   const queryClient = new QueryClient();
 
   return useMutation({
-    mutationFn: createProject,
+    mutationFn: withToastMessages(createProject, TOAST_MESSAGES_CREATE),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [JIRA_QUERY_KEYS.projectsList],

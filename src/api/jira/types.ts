@@ -1,3 +1,4 @@
+//projects
 export interface JiraProject {
 	avatarUrls: AvatarUrls
 	id: string
@@ -33,5 +34,18 @@ export interface ProjectCreate {
 	name: string;
 	key: string;
 	leadAccountId: string;
+	projectTypeKey: "software" | "service_desk" | "business";
 }
   
+//users 
+
+export interface User {
+	accountId: string
+	accountType: string
+	active: boolean
+	avatarUrls: AvatarUrls
+	displayName: string
+	key: string
+	name: string
+	self: string
+  }
