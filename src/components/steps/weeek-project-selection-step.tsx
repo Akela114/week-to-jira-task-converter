@@ -12,10 +12,9 @@ import { Interceptor } from "../interceptor";
 
 export const WeekProjectSelectionStep = () => {
 	const { data, status, error } = useProjectsList();
-	const selectedProjectId = useWeeekStore((state) => state.selectedProjectId);
-	const setSelectedProjectId = useWeeekStore(
-		(state) => state.setSelectedProjectId,
-	);
+	const projectId = useWeeekStore((state) => state.projectId);
+	const setProjectId = useWeeekStore((state) => state.setProjectId);
+	const resetProjectId = useWeeekStore((state) => state.resetProjectId);
 
 	const projectSelectOptions = data?.projects.map((project) => (
 		<SelectItem value={String(project.id)} key={project.id}>
@@ -23,18 +22,23 @@ export const WeekProjectSelectionStep = () => {
 		</SelectItem>
 	));
 
+	if (
+		status === "success" &&
+		!data.projects.some((project) => String(project.id) === projectId)
+	) {
+		resetProjectId();
+	}
+
 	return (
 		<Step
 			title="Шаг 1. Выберите проект в WEEEK"
 			content={
 				<Interceptor status={status} errorMessage={error?.message}>
 					<Select
-						onValueChange={setSelectedProjectId}
+						onValueChange={setProjectId}
 						value={
-							data?.projects.some(
-								(project) => String(project.id) === selectedProjectId,
-							)
-								? selectedProjectId
+							data?.projects.some((project) => String(project.id) === projectId)
+								? projectId
 								: undefined
 						}
 					>
