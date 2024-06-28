@@ -43,7 +43,7 @@ export const AddProjectModal: FC<IModalProps> = () => {
 			confirmButtonText="Создать"
 			title="Создать проект"
 			onConfirm={async () => {
-				if (!formState.key || !formState.name || selectedUserId) {
+				if (!formState.key || !formState.name || !selectedUserId) {
 					return setError(true);
 				}
 				if (selectedUserId) {

@@ -82,8 +82,8 @@ export const JiraStatusesStep = () => {
 					</div>
 				</Interceptor>
 			}
-			title="Шаг unknown. Сопоставление колонок"
-			isActive
+			title="Шаг 6. Сопоставление колонок из WEEEK и JIRA"
+			isActive={!!jiraProject}
 		/>
 	);
 };

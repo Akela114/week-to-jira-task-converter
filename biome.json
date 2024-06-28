@@ -15,16 +15,5 @@
         }
       }
     }
-  },
-  "linter": {
-    "rules": {
-      "style": {
-        "noUnusedTemplateLiteral": {
-          "level": "error",
-          "fix": "safe"
-        }
-      }
-    }
   }
-
 }

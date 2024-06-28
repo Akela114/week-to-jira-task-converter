@@ -10,6 +10,7 @@ import {
 import { useJiraProjectsList } from "@/api/jira/hooks/use-projects";
 import { useJiraStore } from "@/store/jira-store";
 import { AddProjectModal } from "../addProjectModal";
+import { useWeeekStore } from "@/store/weeek-store";
 
 export const JiraProjectSelectionStep = () => {
 	const { data, status, error } = useJiraProjectsList();
@@ -19,6 +20,9 @@ export const JiraProjectSelectionStep = () => {
 		(state) => state.setSelectedProjectId,
 	);
 
+	const selectedJiraUserId = useJiraStore((store) => store.selectedJiraUser);
+	const selectedWeeekUserId = useWeeekStore((store) => store.userId);
+
 	const projectSelectOptions = data?.map((project) => (
 		<SelectItem value={String(project.id)} key={project.id}>
 			{project.name}
@@ -27,7 +31,7 @@ export const JiraProjectSelectionStep = () => {
 
 	return (
 		<Step
-			title="Шаг unknown. Выберите проект в JIRA"
+			title="Шаг 5. Выберите проект в JIRA"
 			content={
 				<div className="flex gap-4 items-center">
 					<Interceptor status={status} errorMessage={error?.message}>
@@ -54,7 +58,7 @@ export const JiraProjectSelectionStep = () => {
 					/>
 				</div>
 			}
-			isActive
+			isActive={!!selectedJiraUserId && !!selectedWeeekUserId}
 		/>
 	);
 };
