@@ -2,15 +2,23 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware';
 
 type WeeekStore = {
-  selectedProjectId?: string;
-  setSelectedProjectId: (id: string) => void;
+  projectId?: string;
+  boardId?: string;
+  setProjectId: (id: string) => void;
+  resetProjectId: () => void;
+  setBoardId: (id: string) => void;
+  resetBoardId: () => void;
 }
 
 export const useWeeekStore = create(
   persist<WeeekStore>(
     (set) => ({
-      selectedProjectId: undefined,
-      setSelectedProjectId: (id: string) => set({ selectedProjectId: id }),
+      projectId: undefined,
+      boardId: undefined,
+      setProjectId: (id: string) => set({ projectId: id, boardId: undefined }),
+      resetProjectId: () => set({ projectId: undefined, boardId: undefined }),
+      setBoardId: (id: string) => set({ boardId: id }),
+      resetBoardId: () => set({ boardId: undefined }),
     }),
     {
       name: 'weeek-store'
