@@ -1,3 +1,4 @@
+import { JiraAddTasks } from "./components/steps/jira-add-tasks";
 import { JiraProjectSelectionStep } from "./components/steps/jira-project-selection-step";
 import { JiraStatusesStep } from "./components/steps/jira-statuses-step";
 import { UsersMappingStep } from "./components/steps/users-mapping-step";
@@ -15,6 +16,7 @@ function App() {
 				<UsersMappingStep />
 				<JiraProjectSelectionStep />
 				<JiraStatusesStep />
+				<JiraAddTasks />
 			</div>
 		</div>
 	);

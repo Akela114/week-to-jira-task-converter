@@ -8,5 +8,6 @@ export const WEEEK_QUERY_KEYS = {
 export const JIRA_QUERY_KEYS = {
   projectsList: 'jira_projects_list',
   users: 'users',
-  projectStatuses: "project_statuses"
+  projectStatuses: "project_statuses",
+  transition: "trasition",
 }
