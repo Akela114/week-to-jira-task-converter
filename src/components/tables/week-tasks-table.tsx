@@ -46,29 +46,27 @@ export const WeekTasksTable: FC<WeekTasksTableProps> = ({ title, tasks }) => {
 	));
 
 	return (
-		<>
-			<Table>
-				{title && <TableCaption className="text-start">{title}</TableCaption>}
-				<TableHeader>
+		<Table>
+			{title && <TableCaption className="text-start">{title}</TableCaption>}
+			<TableHeader>
+				<TableRow>
+					<TableHead>Id</TableHead>
+					<TableHead>Название</TableHead>
+					<TableHead>Статус</TableHead>
+					<TableHead className="text-right">Вложения</TableHead>
+				</TableRow>
+			</TableHeader>
+			<TableBody>
+				{taskRows.length ? (
+					taskRows
+				) : (
 					<TableRow>
-						<TableHead>Id</TableHead>
-						<TableHead>Название</TableHead>
-						<TableHead>Статус</TableHead>
-						<TableHead className="text-right">Вложения</TableHead>
+						<TableCell colSpan={4} className="font-medium">
+							Список задач пуст
+						</TableCell>
 					</TableRow>
-				</TableHeader>
-				<TableBody>
-					{taskRows.length ? (
-						taskRows
-					) : (
-						<TableRow>
-							<TableCell colSpan={4} className="font-medium">
-								Список задач пуст
-							</TableCell>
-						</TableRow>
-					)}
-				</TableBody>
-			</Table>
-		</>
+				)}
+			</TableBody>
+		</Table>
 	);
 };

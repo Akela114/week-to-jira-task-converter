@@ -5,14 +5,7 @@ import { useTasksList } from "@/api/weeek/hooks/use-task-lists";
 import { type ComponentProps, useMemo } from "react";
 import { useWorkspaceMembers } from "@/api/weeek/hooks/use-workspace-members";
 import { useJiraUsers } from "@/api/jira/hooks/use-users";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/shared/ui/select";
-import { useJiraStore } from "@/store/jira-store";
+import { UsersMappingTable } from "../tables/users-mapping-table";
 
 export const UsersMappingStep = () => {
 	const projectId = useWeeekStore((state) => state.projectId);
@@ -34,32 +27,23 @@ export const UsersMappingStep = () => {
 		status: userJiraStatus,
 	} = useJiraUsers();
 
-	const selectedJiraUser = useJiraStore((store) => store.selectedJiraUser);
-	const setSelectedJiraUser = useJiraStore(
-		(store) => store.setSelectedJiraUser,
-	);
-
-	const selectedWeeekUser = useWeeekStore((store) => store.userId);
-	const setSelectedWeeekUser = useWeeekStore((store) => store.setUserId);
-
-	const relatedUsers = useMemo(
+	const relatedWeekUsersIds = useMemo(
 		() =>
-			tasksData &&
-			membersData &&
-			[
+			tasksData && [
 				...new Set(
 					tasksData?.flatMap((task) => [
 						...new Set([task.authorId, ...(task.userId ? [task.userId] : [])]),
 					]),
 				),
-			].map((userId) => {
-				const member = membersData.members?.find(
-					(member) => member.id === userId,
-				);
-				return member ? `${member.firstName} ${member.lastName}` : userId;
-			}),
-		[tasksData, membersData],
+			],
+		[tasksData],
 	);
+
+	const relatedWeekMembers =
+		relatedWeekUsersIds &&
+		membersData?.members.filter((member) =>
+			relatedWeekUsersIds.includes(member.id),
+		);
 
 	let globalStatus: ComponentProps<typeof Interceptor>["status"];
 	if (
@@ -78,20 +62,6 @@ export const UsersMappingStep = () => {
 		globalStatus = "success";
 	}
 
-	const jiraUserSelectOptions = jiraUsers
-		?.filter(({ accountType }) => accountType !== "app")
-		.map((user) => (
-			<SelectItem value={String(user?.accountId)} key={user?.accountId}>
-				{user?.displayName}
-			</SelectItem>
-		));
-
-	const weeekUserSelectedOptions = membersData?.members?.map((user) => (
-		<SelectItem value={String(user?.id)} key={user?.id}>
-			{user?.firstName} {user.lastName}
-		</SelectItem>
-	));
-
 	return (
 		<Step
 			title="Шаг 4. Сопоставление пользователей из Week пользователям Jira"
@@ -104,42 +74,26 @@ export const UsersMappingStep = () => {
 						userJiraError?.message
 					}
 				>
-					<div className="flex gap-4">
-						<div className="w-[180px]">
-							<Select
-								onValueChange={setSelectedWeeekUser}
-								value={
-									membersData?.members?.some(
-										(user) => String(user.id) === selectedWeeekUser,
-									)
-										? selectedWeeekUser
-										: undefined
-								}
-							>
-								<SelectTrigger className="w-full text-xs">
-									<SelectValue placeholder="Пользователь WEEEK" />
-								</SelectTrigger>
-								<SelectContent>{weeekUserSelectedOptions}</SelectContent>
-							</Select>
-						</div>
-						<div className="w-[180px]">
-							<Select
-								onValueChange={setSelectedJiraUser}
-								value={
-									jiraUsers?.some(
-										(user) => String(user.accountId) === selectedJiraUser,
-									)
-										? selectedJiraUser
-										: undefined
-								}
-							>
-								<SelectTrigger className="w-full text-xs">
-									<SelectValue placeholder="Пользователь JIRA" />
-								</SelectTrigger>
-								<SelectContent>{jiraUserSelectOptions}</SelectContent>
-							</Select>
-						</div>
-					</div>
+					<UsersMappingTable
+						weekUsers={
+							relatedWeekMembers?.map(({ id, firstName, lastName }) => ({
+								id,
+								name:
+									[
+										...(firstName ? [firstName] : []),
+										...(lastName ? [lastName] : []),
+									].join(" ") || id,
+							})) ?? []
+						}
+						jiraUsers={
+							jiraUsers
+								?.filter((user) => user.accountType !== "app")
+								.map((user) => ({
+									id: user.accountId,
+									name: user.displayName,
+								})) ?? []
+						}
+					/>
 				</Interceptor>
 			}
 			isActive={Boolean(tasksData)}

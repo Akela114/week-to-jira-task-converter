@@ -1,19 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { WEEEK_QUERY_KEYS } from "@/lib/constants/query-keys";
-import { getBoardColumnList, getBoardTaskList } from "../fetchers";
-import { withToastMessages } from "@/lib/utils/with-toast-messages";
-
-const BOARD_COLUMNS_FETCHING_TOAST_MESSAGES = {
-  success: "Успешная загрузка статусов задач из WEEEK",
-  error: "Произошла ошибка при загрузке статусов задач из WEEEK",
-  pending: "Загрузка статусов задач из WEEEK...",
-} as const;
-
-const TASKS_FETCHING_TOAST_MESSAGES = {
-  success: "Успешная загрузка задач из WEEEK",
-  error: "Произошла ошибка при загрузке задач из WEEEK",
-  pending: "Загрузка задач из WEEEK...",
-} as const;
+import { downloadWeekFile, getBoardColumnList, getBoardTaskList } from "../fetchers";
 
 export const useTasksList = (
   { projectId, boardId }: { projectId?: string, boardId?: string }
@@ -25,10 +12,16 @@ export const useTasksList = (
         const { boardColumns } = await getBoardColumnList({ boardId });
         const { tasks } = await getBoardTaskList({ boardId });
         
-        return tasks.map((task) => ({
+        return await Promise.all(tasks.map(async (task) => ({
           ...task,
-          boardColumnName: boardColumns.find((column) => column.id === task.boardColumnId)?.name
-        }))
+          boardColumnName: boardColumns.find((column) => column.id === task.boardColumnId)?.name,
+          attachments: await Promise.all(
+            task.attachments.map(async (attachment) => ({
+              ...attachment,
+              blob: await downloadWeekFile(attachment.url),
+          }))
+        )
+        })))
       }
     },
     enabled: Boolean(projectId && boardId),

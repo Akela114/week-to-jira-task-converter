@@ -4,12 +4,12 @@ import { persist } from 'zustand/middleware';
 type WeeekStore = {
   projectId?: string;
   boardId?: string;
-  userId?: string;
+  usersMap?: Record<string, string>;
   setProjectId: (id: string) => void;
   resetProjectId: () => void;
   setBoardId: (id: string) => void;
   resetBoardId: () => void;
-  setUserId: (id: string) => void;
+  setUsersMap: (map: Record<string, string>) => void;
 }
 
 export const useWeeekStore = create(
@@ -18,11 +18,12 @@ export const useWeeekStore = create(
       userId: undefined,
       projectId: undefined,
       boardId: undefined,
-      setProjectId: (id: string) => set({ projectId: id, boardId: undefined }),
-      resetProjectId: () => set({ projectId: undefined, boardId: undefined }),
-      setBoardId: (id: string) => set({ boardId: id }),
-      resetBoardId: () => set({ boardId: undefined }),
-      setUserId: (id: string) => set({ userId: id }),
+      usersMap: undefined,
+      setProjectId: (id: string) => set({ projectId: id, boardId: undefined, usersMap: undefined }),
+      resetProjectId: () => set({ projectId: undefined, boardId: undefined, usersMap: undefined }),
+      setBoardId: (id: string) => set({ boardId: id, usersMap: undefined }),
+      resetBoardId: () => set({ boardId: undefined, usersMap: undefined }),
+      setUsersMap: (map: Record<string, string>) => set({ usersMap: map }),
     }),
     {
       name: 'weeek-store'

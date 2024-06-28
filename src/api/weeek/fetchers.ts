@@ -1,3 +1,4 @@
+import axios from "axios";
 import { weeekAPIInstance } from "./instance";
 import type {
 	GetWorkspaceMembers,
@@ -75,4 +76,14 @@ export const getWorkspaceMembers = async () => {
 	}
 
 	throw Error(data.message);
+};
+
+export const downloadWeekFile = async (url: string) => {
+  const { data } = await axios.get<Blob>(
+		`/week-file/${url.replace("https://api.weeek.net/ws", "")}`, {
+			responseType: "blob",
+		}
+	);
+	
+	return data;
 };
