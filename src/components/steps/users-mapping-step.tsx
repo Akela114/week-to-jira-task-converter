@@ -1,5 +1,5 @@
 import { Step } from "@/shared/ui/step";
-import { useWeeekStore } from "@/store/weeek-store";
+import { useAppStore } from "@/store/app-store";
 import { Interceptor } from "../interceptor";
 import { useTasksList } from "@/api/weeek/hooks/use-task-lists";
 import { type ComponentProps, useMemo } from "react";
@@ -8,8 +8,8 @@ import { useJiraUsers } from "@/api/jira/hooks/use-users";
 import { UsersMappingTable } from "../tables/users-mapping-table";
 
 export const UsersMappingStep = () => {
-	const projectId = useWeeekStore((state) => state.projectId);
-	const boardId = useWeeekStore((state) => state.boardId);
+	const projectId = useAppStore((state) => state.projectId);
+	const boardId = useAppStore((state) => state.boardId);
 	const {
 		data: tasksData,
 		status: tasksStatus,
@@ -31,19 +31,13 @@ export const UsersMappingStep = () => {
 		() =>
 			tasksData && [
 				...new Set(
-					tasksData?.flatMap((task) => [
+					tasksData?.tasks.flatMap((task) => [
 						...new Set([task.authorId, ...(task.userId ? [task.userId] : [])]),
 					]),
 				),
 			],
 		[tasksData],
 	);
-
-	const relatedWeekMembers =
-		relatedWeekUsersIds &&
-		membersData?.members.filter((member) =>
-			relatedWeekUsersIds.includes(member.id),
-		);
 
 	let globalStatus: ComponentProps<typeof Interceptor>["status"];
 	if (
@@ -62,9 +56,27 @@ export const UsersMappingStep = () => {
 		globalStatus = "success";
 	}
 
+	const weeekUsers = useMemo(
+		() =>
+			(
+				relatedWeekUsersIds &&
+				membersData?.members.filter((member) =>
+					relatedWeekUsersIds.includes(member.id),
+				)
+			)?.map(({ id, firstName, lastName }) => ({
+				id,
+				name:
+					[
+						...(firstName ? [firstName] : []),
+						...(lastName ? [lastName] : []),
+					].join(" ") || id,
+			})) ?? [],
+		[relatedWeekUsersIds, membersData],
+	);
+
 	return (
 		<Step
-			title="Шаг 4. Сопоставление пользователей из Week пользователям Jira"
+			title="Шаг 4. Сопоставление пользователей из Weeek пользователям Jira"
 			content={
 				<Interceptor
 					status={globalStatus}
@@ -75,16 +87,7 @@ export const UsersMappingStep = () => {
 					}
 				>
 					<UsersMappingTable
-						weekUsers={
-							relatedWeekMembers?.map(({ id, firstName, lastName }) => ({
-								id,
-								name:
-									[
-										...(firstName ? [firstName] : []),
-										...(lastName ? [lastName] : []),
-									].join(" ") || id,
-							})) ?? []
-						}
+						weekUsers={weeekUsers}
 						jiraUsers={
 							jiraUsers
 								?.filter((user) => user.accountType !== "app")

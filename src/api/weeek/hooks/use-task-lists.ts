@@ -12,7 +12,9 @@ export const useTasksList = (
         const { boardColumns } = await getBoardColumnList({ boardId });
         const { tasks } = await getBoardTaskList({ boardId });
         
-        return await Promise.all(tasks.map(async (task) => ({
+        return {
+          boardColumns,
+          tasks: await Promise.all(tasks.map(async (task) => ({
           ...task,
           boardColumnName: boardColumns.find((column) => column.id === task.boardColumnId)?.name,
           attachments: await Promise.all(
@@ -22,6 +24,7 @@ export const useTasksList = (
           }))
         )
         })))
+      }
       }
     },
     enabled: Boolean(projectId && boardId),

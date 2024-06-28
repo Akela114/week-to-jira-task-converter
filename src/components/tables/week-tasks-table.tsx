@@ -46,7 +46,7 @@ export const WeekTasksTable: FC<WeekTasksTableProps> = ({ title, tasks }) => {
 	));
 
 	return (
-		<Table>
+		<Table className="border">
 			{title && <TableCaption className="text-start">{title}</TableCaption>}
 			<TableHeader>
 				<TableRow>

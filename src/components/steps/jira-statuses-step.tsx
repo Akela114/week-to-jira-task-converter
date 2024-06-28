@@ -1,16 +1,6 @@
 import { useStatuses } from "@/api/jira/hooks/use-projects";
 import { Step } from "@/shared/ui/step";
 import { Interceptor } from "../interceptor";
-import { useJiraStore } from "@/store/jira-store";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableCaption,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/shared/ui/table";
 import {
 	Select,
 	SelectContent,
@@ -18,17 +8,17 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/shared/ui/select";
-import { Button } from "@/shared/ui/button";
+import { useAppStore } from "@/store/app-store";
 
 export const JiraStatusesStep = () => {
-	const jiraProject = useJiraStore((state) => state.selectedProjectId);
-
-	const setSelectedTypeTasks = useJiraStore(
-		(state) => state.setSelectedTypeTasks,
+	const jiraProject = useAppStore((state) => state.jiraProjectId);
+	const jiraTasksTypeId = useAppStore((state) => state.jiraTasksTypeId);
+	const setJiraTasksTypeId = useAppStore((state) => state.setJiraTasksTypeId);
+	const resetJiraTasksTypeId = useAppStore(
+		(state) => state.resetJiraTasksTypeId,
 	);
-	const selectedTypeTaskId = useJiraStore((state) => state.selectedTaskType);
 
-	const { data, error, status, refetch } = useStatuses(jiraProject);
+	const { data, error, status } = useStatuses(jiraProject);
 
 	const TypeSelectOptions = data?.map((type) => (
 		<SelectItem value={String(type.id)} key={type.id}>
@@ -36,24 +26,31 @@ export const JiraStatusesStep = () => {
 		</SelectItem>
 	));
 
+	if (
+		status === "success" &&
+		!data.some((type) => type.id === jiraTasksTypeId)
+	) {
+		resetJiraTasksTypeId();
+	}
+
 	return (
 		<Step
 			content={
 				<Interceptor status={status} errorMessage={error?.message}>
 					<Select
-						onValueChange={setSelectedTypeTasks}
+						onValueChange={setJiraTasksTypeId}
 						value={
-							data?.some((type) => String(type.id) === selectedTypeTaskId)
-								? selectedTypeTaskId
+							data?.some((type) => type.id === jiraTasksTypeId)
+								? jiraTasksTypeId
 								: undefined
 						}
 					>
-						<SelectTrigger className="w-[180px]">
-							<SelectValue placeholder="Выберите тип задач для jira" />
+						<SelectTrigger className="w-[300px]">
+							<SelectValue placeholder="Выберите тип задач" />
 						</SelectTrigger>
 						<SelectContent>{TypeSelectOptions}</SelectContent>
 					</Select>
-					<Table className="w-max">
+					{/* <Table className="w-max">
 						<TableCaption>Статусы из JIRA</TableCaption>
 						<TableHeader>
 							<TableRow>
@@ -79,10 +76,10 @@ export const JiraStatusesStep = () => {
 						<Button variant="outline" onClick={() => refetch()}>
 							Обновить
 						</Button>
-					</div>
+					</div> */}
 				</Interceptor>
 			}
-			title="Шаг 6. Сопоставление колонок из WEEEK и JIRA"
+			title="Шаг 6. Выбор типа задач, который будет использован при создании задач в Jira"
 			isActive={!!jiraProject}
 		/>
 	);

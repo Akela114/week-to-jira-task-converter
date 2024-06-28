@@ -1,4 +1,4 @@
-import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import {  useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createProject, getProjectsList, getStatuses } from "../fetchers";
 import { withToastMessages } from "@/lib/utils/with-toast-messages";
 import { JIRA_QUERY_KEYS } from "@/lib/constants/query-keys";
@@ -19,11 +19,12 @@ const TOAST_MESSAGES_CREATE = {
 } as const;
 
 export const useAddJiraProject = () => {
-  const queryClient = new QueryClient();
+  const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: withToastMessages(createProject, TOAST_MESSAGES_CREATE),
     onSuccess: () => {
+      console.log('123')
       queryClient.invalidateQueries({
         queryKey: [JIRA_QUERY_KEYS.projectsList],
       });

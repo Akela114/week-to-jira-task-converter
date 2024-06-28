@@ -28,68 +28,68 @@ import {
 import { useAppStore } from "@/store/app-store";
 
 type UsersMappingTableProps = {
-	weekUsers: {
+	weekStatuses: {
 		id: string;
 		name?: string;
 	}[];
-	jiraUsers: {
+	jiraStatuses: {
 		id: string;
 		name?: string;
 	}[];
 };
 
-export const UsersMappingTable: FC<UsersMappingTableProps> = ({
-	weekUsers,
-	jiraUsers,
+export const StatusesMappingTable: FC<UsersMappingTableProps> = ({
+	weekStatuses,
+	jiraStatuses,
 }) => {
-	const usersMappingSchema = useMemo(
+	const statusesMappingSchema = useMemo(
 		() =>
 			z.object(
-				weekUsers.reduce((acc: Record<string, z.ZodString>, user) => {
-					acc[user.id] = z.string({ required_error: "Выберите пользователя" });
+				weekStatuses.reduce((acc: Record<string, z.ZodString>, status) => {
+					acc[status.id] = z.string({ required_error: "Выберите статус" });
 					return acc;
 				}, {}),
 			),
-		[weekUsers],
+		[weekStatuses],
 	);
 
-	const form = useForm<z.infer<typeof usersMappingSchema>>({
-		resolver: zodResolver(usersMappingSchema),
+	const form = useForm<z.infer<typeof statusesMappingSchema>>({
+		resolver: zodResolver(statusesMappingSchema),
 	});
 
-	const usersMap = useAppStore((state) => state.usersMap);
-	const resetUsersMap = useAppStore((state) => state.resetUsersMap);
+	const statusesMap = useAppStore((state) => state.statusesMap);
+	const resetStatusesMap = useAppStore((state) => state.resetTaskStatusesMap);
 	useEffect(() => {
-		if (usersMap) {
-			const result = usersMappingSchema.safeParse(usersMap);
+		if (statusesMap) {
+			const result = statusesMappingSchema.safeParse(statusesMap);
 			if (result.success) {
 				form.reset(result.data);
 			} else {
-				resetUsersMap();
+				resetStatusesMap();
 			}
 		}
-	}, [usersMap, form.reset, usersMappingSchema, resetUsersMap]);
+	}, [statusesMap, form.reset, statusesMappingSchema, resetStatusesMap]);
 
-	const setUsersMap = useAppStore((state) => state.setUsersMap);
+	const setTaskStatusesMap = useAppStore((state) => state.setTaskStatusesMap);
 
-	const tableRows = weekUsers.map((user) => (
-		<TableRow key={user.id}>
-			<TableCell>{user.name}</TableCell>
+	const tableRows = weekStatuses.map((status) => (
+		<TableRow key={status.id}>
+			<TableCell>{status.name}</TableCell>
 			<TableCell>
 				<FormField
 					control={form.control}
-					name={user.id}
+					name={status.id}
 					render={({ field: { onChange, value } }) => (
 						<FormItem>
 							<FormControl>
 								<Select value={value} onValueChange={onChange}>
 									<SelectTrigger className="max-w-[300px]">
-										<SelectValue placeholder="Выберите пользователя в Jira" />
+										<SelectValue placeholder="Выберите статус в Jira" />
 									</SelectTrigger>
 									<SelectContent>
-										{jiraUsers.map((user) => (
-											<SelectItem key={user.id} value={user.id}>
-												{user.name}
+										{jiraStatuses.map((status) => (
+											<SelectItem key={status.id} value={status.id}>
+												{status.name}
 											</SelectItem>
 										))}
 									</SelectContent>
@@ -106,14 +106,14 @@ export const UsersMappingTable: FC<UsersMappingTableProps> = ({
 	return (
 		<Form {...form}>
 			<form
-				onSubmit={form.handleSubmit(setUsersMap)}
+				onSubmit={form.handleSubmit(setTaskStatusesMap)}
 				className="space-y-[10px]"
 			>
 				<Table className="border">
 					<TableHeader>
 						<TableRow>
-							<TableHead>Пользователь в Weeek</TableHead>
-							<TableHead>Пользователь в Jira</TableHead>
+							<TableHead>Колонка в Weeek</TableHead>
+							<TableHead>Статус в Jira</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>{tableRows}</TableBody>

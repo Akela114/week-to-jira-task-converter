@@ -9,7 +9,7 @@ type StepProps = {
 
 export const Step: FC<StepProps> = ({ title, content, isActive }) => {
 	return (
-		<div className="space-y-[5px]">
+		<div className={cn("space-y-[5px] last:border-b-0 border-b-2 p-[20px]")}>
 			<div
 				className={cn("font-medium", {
 					"text-muted": !isActive,
