@@ -18,23 +18,28 @@ export const JiraAddTasks = () => {
 		jiraTasksTypeId,
 		jiraProjectId,
 		usersMap,
+		statusesMap,
 	} = state;
 	const { data, status, error } = useTasksList({ projectId, boardId });
 
-	console.log(usersMap, data);
-
 	const onAddTasks = async () => {
 		if (!data?.tasks) return;
-		if (!jiraProjectId || !jiraTasksTypeId || !usersMap) {
+		if (!jiraProjectId || !jiraTasksTypeId || !usersMap || !statusesMap) {
 			toast(
-				"Не выбран проект или тип задачи в Jira или не сопоставлены пользователи",
+				"Не выбран проект или тип задачи в Jira или не сопоставлены пользователи или статусы",
 				{
 					type: "error",
 				},
 			);
 			throw new Error("Не выбран проект или тип Задачи в Jira");
 		}
-		for (const { userId, description, authorId, title } of data.tasks) {
+		for (const {
+			userId,
+			description,
+			authorId,
+			title,
+			boardColumnId,
+		} of data.tasks) {
 			const { id } = await addTask({
 				fields: {
 					// исполнитель
@@ -68,8 +73,19 @@ export const JiraAddTasks = () => {
 			const { transitions } = await getTransition(id);
 
 			// берем из сопоставленных категорий id категории жира находим ее в массиве transitions по полям to.id
-			// и достаем из найденного объекта transitions transition.id это и будет categoryId
-			// await changeTaskStatus({ categoryId: "31", taskId: id });
+			// и достаем из найденного объекта targetTransitions id это и будет categoryId
+			const targetTransition = transitions.find(
+				({ to }) => to.id === statusesMap[boardColumnId],
+			);
+
+			if (!targetTransition) {
+				toast(`Не удалось поменять статус задачи ${title}`, {
+					type: "error",
+				});
+				throw new Error(`Не удалось поменять статус задачи ${title}`);
+			}
+
+			await changeTaskStatus({ categoryId: targetTransition.id, taskId: id });
 		}
 	};
 
