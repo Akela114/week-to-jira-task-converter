@@ -9,7 +9,10 @@ export const getProjectsList = async () => {
 
 
 export const createProject = async (projectData: ProjectCreate) => {
-  const { data } = await jiraAPIInstance.post('/project', projectData);
+  const { data } = await jiraAPIInstance.post('/project', {
+    ...projectData,
+    projectTemplateKey: "com.pyxis.greenhopper.jira:gh-simplified-agility-kanban"
+  });
   return data;
 }
 

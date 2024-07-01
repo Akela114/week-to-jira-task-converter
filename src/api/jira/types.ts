@@ -78,7 +78,9 @@ export interface CreateTaskBody {
 }
 
 export interface Fields {
-  assignee?: objectId;
+  assignee?: {
+    id?: string;
+  };
   components?: objectId[];
   customfield_10000?: string;
   description: string;

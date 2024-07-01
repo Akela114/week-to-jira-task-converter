@@ -57,6 +57,7 @@ export const StatusesMappingTable: FC<UsersMappingTableProps> = ({
 		resolver: zodResolver(statusesMappingSchema),
 	});
 
+	const setIsReadyAddTasks = useAppStore((state) => state.setIsReadyAddTasks);
 	const statusesMap = useAppStore((state) => state.statusesMap);
 	const resetStatusesMap = useAppStore((state) => state.resetTaskStatusesMap);
 	useEffect(() => {
@@ -82,7 +83,13 @@ export const StatusesMappingTable: FC<UsersMappingTableProps> = ({
 					render={({ field: { onChange, value } }) => (
 						<FormItem>
 							<FormControl>
-								<Select value={value} onValueChange={onChange}>
+								<Select
+									value={value}
+									onValueChange={(e) => {
+										setIsReadyAddTasks(false);
+										onChange(e);
+									}}
+								>
 									<SelectTrigger className="max-w-[300px]">
 										<SelectValue placeholder="Выберите статус в Jira" />
 									</SelectTrigger>
@@ -118,7 +125,11 @@ export const StatusesMappingTable: FC<UsersMappingTableProps> = ({
 					</TableHeader>
 					<TableBody>{tableRows}</TableBody>
 				</Table>
-				<Button type="submit" variant="outline">
+				<Button
+					type="submit"
+					variant="outline"
+					onClick={() => setIsReadyAddTasks(true)}
+				>
 					Подтвердить выбор
 				</Button>
 			</form>

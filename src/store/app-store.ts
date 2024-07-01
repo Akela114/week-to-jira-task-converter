@@ -8,6 +8,7 @@ type AppStore = {
   jiraProjectId?: string;
   jiraTasksTypeId?: string;
   statusesMap?: Record<string, string>;
+  isReadyAddTasks?: boolean;
   setProjectId: (id: string) => void;
   resetProjectId: () => void;
   setBoardId: (id: string) => void;
@@ -20,6 +21,7 @@ type AppStore = {
   resetJiraTasksTypeId: () => void;
   setTaskStatusesMap: (map: Record<string, string>) => void;
   resetTaskStatusesMap: () => void;
+  setIsReadyAddTasks: (isReady: boolean) => void;
 }
 
 export const useAppStore = create(
@@ -29,18 +31,20 @@ export const useAppStore = create(
       projectId: undefined,
       boardId: undefined,
       usersMap: undefined,
-      setProjectId: (id: string) => set({ projectId: id, boardId: undefined, usersMap: undefined, jiraProjectId: undefined, jiraTasksTypeId: undefined, statusesMap: undefined }),
-      resetProjectId: () => set({ projectId: undefined, boardId: undefined, usersMap: undefined, jiraProjectId: undefined, jiraTasksTypeId: undefined, statusesMap: undefined }),
-      setBoardId: (id: string) => set({ boardId: id, usersMap: undefined, jiraProjectId: undefined, jiraTasksTypeId: undefined, statusesMap: undefined }),
-      resetBoardId: () => set({ boardId: undefined, usersMap: undefined, jiraProjectId: undefined, jiraTasksTypeId: undefined, statusesMap: undefined }),
-      setUsersMap: (map: Record<string, string>) => set({ usersMap: map, jiraProjectId: undefined, jiraTasksTypeId: undefined, statusesMap: undefined }),
-      resetUsersMap: () => set({ usersMap: undefined, jiraProjectId: undefined, jiraTasksTypeId: undefined, statusesMap: undefined }),
-      setJiraProjectId: (id: string) => set({ jiraProjectId: id, jiraTasksTypeId: undefined, statusesMap: undefined }),
-      resetJiraProjectId: () => set({ jiraProjectId: undefined, jiraTasksTypeId: undefined, statusesMap: undefined }),
-      setJiraTasksTypeId: (id: string) => set({ jiraTasksTypeId: id, statusesMap: undefined }),
-      resetJiraTasksTypeId: () => set({ jiraTasksTypeId: undefined, statusesMap: undefined }),
+      isReadyAddTasks: false,
+      setProjectId: (id: string) => set({ projectId: id, boardId: undefined, usersMap: undefined, jiraProjectId: undefined, jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false }),
+      resetProjectId: () => set({ projectId: undefined, boardId: undefined, usersMap: undefined, jiraProjectId: undefined, jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false }),
+      setBoardId: (id: string) => set({ boardId: id, usersMap: undefined, jiraProjectId: undefined, jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false }),
+      resetBoardId: () => set({ boardId: undefined, usersMap: undefined, jiraProjectId: undefined, jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false }),
+      setUsersMap: (map: Record<string, string>) => set({ usersMap: map, jiraProjectId: undefined, jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false }),
+      resetUsersMap: () => set({ usersMap: undefined, jiraProjectId: undefined, jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false }),
+      setJiraProjectId: (id: string) => set({ jiraProjectId: id, jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false }),
+      resetJiraProjectId: () => set({ jiraProjectId: undefined, jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false }),
+      setJiraTasksTypeId: (id: string) => set({ jiraTasksTypeId: id, statusesMap: undefined, isReadyAddTasks: false }),
+      resetJiraTasksTypeId: () => set({ jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false }),
       setTaskStatusesMap: (map: Record<string, string>) => set({ statusesMap: map }),
-      resetTaskStatusesMap: () => set({ statusesMap: undefined }),
+      resetTaskStatusesMap: () => set({ statusesMap: undefined, isReadyAddTasks: false }),
+      setIsReadyAddTasks: (isReady: boolean) => set(({ isReadyAddTasks: isReady }))
     }),
     {
       name: 'weeek-store'
