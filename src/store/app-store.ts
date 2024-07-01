@@ -10,6 +10,7 @@ type AppStore = {
   jiraTasksTypeId?: string;
   statusesMap?: Record<string, string>;
   isReadyAddTasks?: boolean;
+  tasksMap?: Record<string, string>;
   setProjectId: (id: string) => void;
   resetProjectId: () => void;
   setBoardId: (id: string) => void;
@@ -25,6 +26,7 @@ type AppStore = {
   setTaskStatusesMap: (map: Record<string, string>) => void;
   resetTaskStatusesMap: () => void;
   setIsReadyAddTasks: (isReady: boolean) => void;
+  setTasksMap: (map: Record<string, string>) => void;
 }
 
 export const useAppStore = create(
@@ -49,7 +51,8 @@ export const useAppStore = create(
       resetJiraTasksTypeId: () => set({ jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false }),
       setTaskStatusesMap: (map: Record<string, string>) => set({ statusesMap: map }),
       resetTaskStatusesMap: () => set({ statusesMap: undefined, isReadyAddTasks: false }),
-      setIsReadyAddTasks: (isReady: boolean) => set(({ isReadyAddTasks: isReady }))
+      setIsReadyAddTasks: (isReady: boolean) => set(({ isReadyAddTasks: isReady })),
+      setTasksMap: (map: Record<string, string>) => set({ tasksMap: map }),
     }),
     {
       name: 'weeek-store'
