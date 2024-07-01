@@ -28,11 +28,14 @@ export default defineConfig(({ mode }) => {
           secure: false,
           rewrite: (p) => p.replace(/^\/jira-api/, ""),
         },
-        "/week-file": {
+        "/week-ws": {
           target: "https://api.weeek.net/ws",
           changeOrigin: true,
           secure: false,
-          rewrite: (p) => p.replace(/^\/week-file/, ""),
+          headers: {
+            cookie: env.VITE_WEEEK_COOKIES
+          },
+          rewrite: (p) => p.replace(/^\/week-ws/, ""),
         }
       },
     },
@@ -44,11 +47,14 @@ export default defineConfig(({ mode }) => {
           secure: false,
           rewrite: (p) => p.replace(/^\/jira-api/, ""),
         },
-        "/week-file": {
+        "/week-ws": {
           target: "https://api.weeek.net/ws",
           changeOrigin: true,
           secure: false,
-          rewrite: (p) => p.replace(/^\/week-file/, ""),
+          headers: {
+            cookie: env.VITE_WEEEK_COOKIES
+          },
+          rewrite: (p) => p.replace(/^\/week-ws/, ""),
         }
       },
     },

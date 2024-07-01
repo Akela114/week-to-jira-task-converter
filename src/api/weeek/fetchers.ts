@@ -1,12 +1,14 @@
 import axios from "axios";
 import { weeekAPIInstance } from "./instance";
-import type {
-	GetWorkspaceMembers,
-	GetBoardColumnListData,
-	GetBoardColumnTaskList,
-	GetBoardListData,
-	GetProjectsListData,
-	GetBoardTask,
+import {
+	type GetWorkspaceMembers,
+	type GetBoardColumnListData,
+	type GetBoardColumnTaskList,
+	type GetBoardListData,
+	type GetProjectsListData,
+	type GetBoardTask,
+	type GetWeeekComments,
+	getWeeekCommentsSchema,
 } from "./types";
 
 export const getProjectsList = async () => {
@@ -94,10 +96,29 @@ export const getWorkspaceMembers = async () => {
 
 export const downloadWeekFile = async (url: string) => {
   const { data } = await axios.get<Blob>(
-		`/week-file${url.replace("https://api.weeek.net/ws", "")}`, {
+		`/week-ws${url.replace("https://api.weeek.net/ws", "")}`, {
 			responseType: "blob",
 		}
 	);
 	
 	return data;
+};
+
+export const getWeeekComments = async (taskId: number) => {
+  const { data } = await axios.get<GetWeeekComments>(
+		`/week-ws/583893/tm/tasks/${taskId}`, {
+			withCredentials: true,
+		}
+	);
+
+	if (data.success) {
+		const parsedData = getWeeekCommentsSchema.safeParse(data);
+		if (parsedData.success) {
+			return parsedData.data.task.comments;
+		}
+		console.log(parsedData.error.message);
+		throw Error("Данные не прошли валидацию");
+	}
+	
+	throw Error(data.message);
 };

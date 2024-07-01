@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 type AppStore = {
   projectId?: string;
@@ -57,6 +57,7 @@ export const useAppStore = create(
       setIsReadyAddTasks: (isReady: boolean) => set(({ isReadyAddTasks: isReady })),
     }),
     {
-      name: 'weeek-store'
+      name: 'app-store',
+      storage: createJSONStorage(() => sessionStorage),
     }
   ))

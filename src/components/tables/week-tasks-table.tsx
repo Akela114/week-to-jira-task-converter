@@ -15,11 +15,8 @@ type WeekTasksTableProps = {
 		name: string;
 		status?: string;
 		parentId?: number;
-		attachments: {
-			id: string;
-			title: string;
-			link: string;
-		}[];
+		commentsNumber?: number;
+		attachmentsNumber?: number;
 	}[];
 };
 
@@ -30,17 +27,9 @@ export const WeekTasksTable: FC<WeekTasksTableProps> = ({ tasks }) => {
 			<TableCell>{task.name}</TableCell>
 			<TableCell>{task.status}</TableCell>
 			<TableCell>{task.parentId}</TableCell>
+			<TableCell>{task.commentsNumber ?? 0}</TableCell>
 			<TableCell className="text-right">
-				{task.attachments.map((attachment) => (
-					<a
-						href={attachment.link}
-						key={attachment.id}
-						download
-						className="block"
-					>
-						{attachment.title}
-					</a>
-				))}
+				{task.attachmentsNumber ?? 0}
 			</TableCell>
 		</TableRow>
 	));
@@ -56,6 +45,7 @@ export const WeekTasksTable: FC<WeekTasksTableProps> = ({ tasks }) => {
 								<TableHead>Название</TableHead>
 								<TableHead>Статус</TableHead>
 								<TableHead>Id родительской задачи</TableHead>
+								<TableHead>Комментарии</TableHead>
 								<TableHead className="text-right">Вложения</TableHead>
 							</TableRow>
 						</TableHeader>

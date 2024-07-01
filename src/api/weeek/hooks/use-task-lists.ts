@@ -5,6 +5,7 @@ import {
 	getBoardColumnList,
 	getBoardParentTaskList,
 	getTaskById,
+	getWeeekComments,
 } from "../fetchers";
 import type { Task } from "../types";
 
@@ -54,6 +55,7 @@ export const useTasksList = ({
 									blob: await downloadWeekFile(attachment.url),
 								})),
 							),
+							comments: await getWeeekComments(task.id),
 						})),
 					),
 				};

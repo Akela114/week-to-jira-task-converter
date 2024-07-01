@@ -21,21 +21,21 @@ export const WeekTaskFetchingStep = () => {
 								name: task.title,
 								status: task.boardColumnName,
 								parentId: task.parentId,
-								attachments: task.attachments.map((attachment) => ({
-									id: attachment.id,
-									title: attachment.name,
-									link: attachment.url,
-								})),
+								commentsNumber: task.comments.length,
+								attachmentsNumber: task.attachments.length,
 							})) ?? []
 						}
 					/>
 					<div>
-						{data
-							? `Найдено: задачи - ${data.tasks.length}, вложения - ${data.tasks.reduce(
+						{data ? (
+							<>
+								<span className="font-medium">Всего: </span>
+								<span>{`задачи - ${data.tasks.length}, вложения - ${data.tasks.reduce(
 									(sum, task) => sum + task.attachments.length,
 									0,
-								)}`
-							: undefined}
+								)}, файлы- ${data.tasks.reduce((sum, task) => sum + task.comments.length, 0)}`}</span>
+							</>
+						) : undefined}
 					</div>
 				</Interceptor>
 			}
