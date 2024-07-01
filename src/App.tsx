@@ -2,6 +2,7 @@ import { JiraAddTasks } from "./components/steps/jira-add-tasks";
 import { JiraProjectMemberRoleSelectionStep } from "./components/steps/jira-project-member-role-selection-step";
 import { JiraProjectSelectionStep } from "./components/steps/jira-project-selection-step";
 import { JiraStatusesStep } from "./components/steps/jira-statuses-step";
+import { JiraSubtasksStatusesStep } from "./components/steps/jira-sutasks-statuses-step";
 import { StatusesMappingStep } from "./components/steps/statuses-mapping-step";
 import { UsersMappingStep } from "./components/steps/users-mapping-step";
 import { WeekProjectSelectionStep } from "./components/steps/weeek-project-selection-step";
@@ -19,6 +20,7 @@ function App() {
 				<JiraProjectMemberRoleSelectionStep />
 				<UsersMappingStep />
 				<JiraStatusesStep />
+				<JiraSubtasksStatusesStep />
 				<StatusesMappingStep />
 				<JiraAddTasks />
 			</div>

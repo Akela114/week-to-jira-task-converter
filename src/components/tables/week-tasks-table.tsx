@@ -48,7 +48,7 @@ export const WeekTasksTable: FC<WeekTasksTableProps> = ({ tasks }) => {
 	return (
 		<div className="space-y-[20px]">
 			<ScrollArea className="h-fit">
-				<div className="max-h-[200px]">
+				<div className="max-h-[800px]">
 					<Table className="border">
 						<TableHeader>
 							<TableRow>

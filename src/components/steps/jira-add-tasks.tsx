@@ -10,6 +10,7 @@ import { useAppStore } from "@/store/app-store";
 import { Interceptor } from "../interceptor";
 import { toast } from "react-toastify";
 import { Step } from "@/shared/ui/step";
+import type { Task } from "@/api/weeek/types";
 
 export const JiraAddTasks = () => {
 	const { mutateAsync: addTask } = useTasks();
@@ -25,6 +26,7 @@ export const JiraAddTasks = () => {
 		jiraProjectId,
 		usersMap,
 		statusesMap,
+		jiraSubtasksTypeId,
 	} = state;
 	const { data, status, error } = useTasksList({ projectId, boardId });
 	const { mutateAsync: editParentId } = useEditParentId();
@@ -32,7 +34,13 @@ export const JiraAddTasks = () => {
 	const onAddTasks = async () => {
 		const tasksMapping = new Map();
 		if (!data?.tasks) return;
-		if (!jiraProjectId || !jiraTasksTypeId || !usersMap || !statusesMap) {
+		if (
+			!jiraProjectId ||
+			!jiraTasksTypeId ||
+			!usersMap ||
+			!statusesMap ||
+			!jiraSubtasksTypeId
+		) {
 			toast(
 				"Не выбран проект или тип задачи в Jira или не сопоставлены пользователи или статусы",
 				{
@@ -41,17 +49,27 @@ export const JiraAddTasks = () => {
 			);
 			throw new Error("Не выбран проект или тип Задачи в Jira");
 		}
-		await Promise.all(
-			data.tasks.map(
-				async ({
-					userId,
-					description,
-					authorId,
-					title,
-					boardColumnId,
-					attachments,
-					id: weekTaskId,
-				}) => {
+		let tasksToAdd: typeof data.tasks = data.tasks;
+		while (tasksToAdd.length) {
+			const tasksToAddCopy: typeof data.tasks = [];
+			await Promise.all(
+				tasksToAdd.map(async (task) => {
+					const {
+						userId,
+						description,
+						authorId,
+						title,
+						boardColumnId,
+						attachments,
+						id: weekTaskId,
+						parentId,
+					} = task;
+
+					if (parentId && !tasksMapping.get(parentId)) {
+						tasksToAddCopy.push(task);
+						return;
+					}
+
 					const { id } = await addTask({
 						fields: {
 							// исполнитель
@@ -76,8 +94,15 @@ export const JiraAddTasks = () => {
 							},
 							// Тип задачи (задача, подзадача, Epic...)
 							issuetype: {
-								id: jiraTasksTypeId,
+								id: parentId ? jiraSubtasksTypeId : jiraTasksTypeId,
 							},
+							...(parentId && tasksMapping.get(parentId)
+								? {
+										parent: {
+											id: tasksMapping.get(parentId),
+										},
+									}
+								: {}),
 							// название задачи
 							summary: title,
 						},
@@ -111,29 +136,16 @@ export const JiraAddTasks = () => {
 						}
 						await addFileInJiraTask({ taskId: id, formData });
 					}
-				},
-			),
-		);
-		if (!tasksMapping.size) return;
-		await Promise.all(
-			data.tasks
-				.filter(({ parentId }) => parentId)
-				.map(async ({ id, parentId }) => {
-					const taskId = id && tasksMapping.get(id);
-					const parentId2 = parentId && tasksMapping.get(parentId);
-					if (parentId2 && taskId) {
-						await editParentId({
-							taskId: taskId,
-							parentId: parentId2,
-						});
-					}
 				}),
-		);
+			);
+			tasksToAdd =
+				tasksToAddCopy.length < tasksToAdd.length ? tasksToAddCopy : [];
+		}
 	};
 
 	return (
 		<Step
-			title="Шаг 8. Загрузка задача в Jira"
+			title="Шаг 10. Загрузка задача в Jira"
 			content={
 				<Interceptor status={status} errorMessage={error?.message}>
 					<Button

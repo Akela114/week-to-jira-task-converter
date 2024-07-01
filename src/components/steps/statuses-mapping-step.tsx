@@ -8,7 +8,8 @@ import { useMemo, type ComponentProps } from "react";
 
 export const StatusesMappingStep = () => {
 	const jiraProjectId = useAppStore((state) => state.jiraProjectId);
-	const jiraStatusID = useAppStore((state) => state.jiraTasksTypeId);
+	const jiraTaskTypeID = useAppStore((state) => state.jiraTasksTypeId);
+	const jiraSubtasksTypeId = useAppStore((state) => state.jiraSubtasksTypeId);
 	const projectId = useAppStore((state) => state.projectId);
 	const boardId = useAppStore((state) => state.boardId);
 	const {
@@ -23,7 +24,7 @@ export const StatusesMappingStep = () => {
 	} = useStatuses(jiraProjectId);
 
 	const filteredStatuses = statusesData?.find(
-		(status) => status.id === jiraStatusID,
+		(status) => status.id === jiraTaskTypeID || jiraSubtasksTypeId,
 	)?.statuses;
 
 	let globalStatus: ComponentProps<typeof Interceptor>["status"];
@@ -46,7 +47,7 @@ export const StatusesMappingStep = () => {
 
 	return (
 		<Step
-			title="Шаг 7. Сопоставление колонок из Weeek статусам в Jira"
+			title="Шаг 9. Сопоставление колонок из Weeek статусам в Jira"
 			content={
 				<Interceptor
 					status={globalStatus}
@@ -63,7 +64,7 @@ export const StatusesMappingStep = () => {
 					/>
 				</Interceptor>
 			}
-			isActive={Boolean(filteredStatuses)}
+			isActive={Boolean(jiraTaskTypeID && jiraSubtasksTypeId)}
 		/>
 	);
 };

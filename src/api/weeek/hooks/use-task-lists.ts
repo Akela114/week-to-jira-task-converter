@@ -18,10 +18,7 @@ const getSubtasks = async ({subTasks, boardColumnId}: Task): Promise<Task[]> => 
       };
     }));
 
-    return [
-      ...subtasksData,
-      ...(await Promise.all(subtasksData.map(getSubtasks))).flat(),
-    ]
+    return subtasksData
   }
 
   return [];
