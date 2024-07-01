@@ -73,7 +73,7 @@ type Attachment = {
   createdAt: string;
 }
 
-type Task = {
+export type Task = {
   id: number;
   parentId?: number;
   title: string;
@@ -119,4 +119,5 @@ export type GetProjectsListData = TWeekAPIResponse<{ projects: Project[]; }>
 export type GetBoardListData = TWeekAPIResponse<{ boards: Board[]; }>
 export type GetBoardColumnListData = TWeekAPIResponse<{ boardColumns: BoardColumn[]; }>
 export type GetBoardColumnTaskList = TWeekAPIResponse<{ tasks: Task[]; hasMore: boolean; }>
+export type GetBoardTask = TWeekAPIResponse<{ task: Task; }>
 export type GetWorkspaceMembers = TWeekAPIResponse<{ members: Member[]; }>

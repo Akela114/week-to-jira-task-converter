@@ -15,19 +15,12 @@ export const WeekTaskFetchingStep = () => {
 			content={
 				<Interceptor status={status} errorMessage={error?.message}>
 					<WeekTasksTable
-						title={
-							data
-								? `Всего: задачи - ${data.tasks.length}, вложения - ${data.tasks.reduce(
-										(sum, task) => sum + task.attachments.length,
-										0,
-									)}`
-								: undefined
-						}
 						tasks={
 							data?.tasks.map((task) => ({
 								id: task.id,
 								name: task.title,
 								status: task.boardColumnName,
+								parentId: task.parentId,
 								attachments: task.attachments.map((attachment) => ({
 									id: attachment.id,
 									title: attachment.name,
@@ -36,6 +29,14 @@ export const WeekTaskFetchingStep = () => {
 							})) ?? []
 						}
 					/>
+					<div>
+						{data
+							? `Найдено: задачи - ${data.tasks.length}, вложения - ${data.tasks.reduce(
+									(sum, task) => sum + task.attachments.length,
+									0,
+								)}`
+							: undefined}
+					</div>
 				</Interceptor>
 			}
 			isActive={Boolean(projectId && boardId)}
