@@ -5,6 +5,7 @@ import { Button } from "@/shared/ui/button";
 import { useAppStore } from "@/store/app-store";
 import { Interceptor } from "../interceptor";
 import { toast } from "react-toastify";
+import { Step } from "@/shared/ui/step";
 
 export const JiraAddTasks = () => {
 	const { mutateAsync: addTask } = useTasks();
@@ -20,6 +21,8 @@ export const JiraAddTasks = () => {
 		jiraProjectId,
 		usersMap,
 		statusesMap,
+		tasksMap,
+		setTasksMap,
 	} = state;
 	const { data, status, error } = useTasksList({ projectId, boardId });
 
@@ -43,8 +46,9 @@ export const JiraAddTasks = () => {
 					title,
 					boardColumnId,
 					attachments,
+					parentId,
+					id: weekTaskId,
 				}) => {
-					console.log(attachments);
 					const { id } = await addTask({
 						fields: {
 							// исполнитель
@@ -75,6 +79,11 @@ export const JiraAddTasks = () => {
 							summary: title,
 						},
 					});
+
+					if (parentId) {
+						setTasksMap({ ...tasksMap, [weekTaskId]: id });
+					}
+
 					const { transitions } = await getTransition(id);
 
 					// берем из сопоставленных категорий id категории жира находим ее в массиве transitions по полям to.id
@@ -105,20 +114,30 @@ export const JiraAddTasks = () => {
 				},
 			),
 		);
+		if (!tasksMap) return;
+		await Promise.all(
+			Object.entries(tasksMap).map(async ([weeekId, jiraId]) => {}),
+		);
 	};
 
 	return (
-		<Interceptor status={status} errorMessage={error?.message}>
-			<Button
-				variant="default"
-				onClick={onAddTasks}
-				disabled={!isReadyAddTasks}
-				className={cn("cursor-pointer opacity-90 mt-6 ml-5", {
-					"opacity-30": !isReadyAddTasks,
-				})}
-			>
-				Добавить задачи
-			</Button>
-		</Interceptor>
+		<Step
+			title="Шаг 8. Загрузка задача в Jira"
+			content={
+				<Interceptor status={status} errorMessage={error?.message}>
+					<Button
+						variant="default"
+						onClick={onAddTasks}
+						disabled={!isReadyAddTasks}
+						className={cn("cursor-pointer opacity-90", {
+							"opacity-30": !isReadyAddTasks,
+						})}
+					>
+						Добавить задачи
+					</Button>
+				</Interceptor>
+			}
+			isActive={isReadyAddTasks}
+		/>
 	);
 };
