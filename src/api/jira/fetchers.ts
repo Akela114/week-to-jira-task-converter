@@ -87,3 +87,14 @@ export const addJiraFileInTask = async (taskId: string, formData: FormData) => {
   });
   return data;
 }
+
+export const linkParentIdForTask = async (taskId: string, parentTaskId: string) => {
+  const { data } = await jiraAPIInstance.put(`issue/${taskId}`, {
+    fields: {
+      parent: {
+        id: parentTaskId
+      }
+    }
+  })
+  return data;
+}

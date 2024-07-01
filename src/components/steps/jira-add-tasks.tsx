@@ -1,4 +1,8 @@
-import { useTasks, useTransition } from "@/api/jira/hooks/use-tasks";
+import {
+	useEditParentId,
+	useTasks,
+	useTransition,
+} from "@/api/jira/hooks/use-tasks";
 import { useTasksList } from "@/api/weeek/hooks/use-task-lists";
 import { cn } from "@/lib/utils/cn";
 import { Button } from "@/shared/ui/button";
@@ -25,6 +29,7 @@ export const JiraAddTasks = () => {
 		setTasksMap,
 	} = state;
 	const { data, status, error } = useTasksList({ projectId, boardId });
+	const { mutateAsync: editParentId } = useEditParentId();
 
 	const onAddTasks = async () => {
 		if (!data?.tasks) return;
@@ -80,9 +85,7 @@ export const JiraAddTasks = () => {
 						},
 					});
 
-					if (parentId) {
-						setTasksMap({ ...tasksMap, [weekTaskId]: id });
-					}
+					setTasksMap({ ...tasksMap, [weekTaskId]: id });
 
 					const { transitions } = await getTransition(id);
 
@@ -116,7 +119,16 @@ export const JiraAddTasks = () => {
 		);
 		if (!tasksMap) return;
 		await Promise.all(
-			Object.entries(tasksMap).map(async ([weeekId, jiraId]) => {}),
+			data.tasks
+				.filter(({ parentId }) => parentId)
+				.map(async ({ id, parentId }) => {
+					if (parentId && id) {
+						await editParentId({
+							taskId: tasksMap[id],
+							parentId: tasksMap[parentId],
+						});
+					}
+				}),
 		);
 	};
 
