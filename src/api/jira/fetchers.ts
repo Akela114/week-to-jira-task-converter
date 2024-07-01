@@ -42,3 +42,12 @@ export const changeTaskStatus = async (issueIdOrKey: string, categoryId: string 
   const { data } = await jiraAPIInstance.post(`issue/${issueIdOrKey}/transitions`, {transition: { id: categoryId, looped: false }})
   return data
 }
+
+export const addJiraFileInTask = async (taskId: string, formData: FormData) => {
+	const { data } = await jiraAPIInstance.post(`/issue/${taskId}/attachments`, formData, {
+    headers: {
+      "X-Atlassian-Token": "no-check"
+    }
+  });
+  return data;
+}

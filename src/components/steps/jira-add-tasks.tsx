@@ -8,7 +8,8 @@ import { toast } from "react-toastify";
 
 export const JiraAddTasks = () => {
 	const { mutateAsync: addTask } = useTasks();
-	const { getTransition, changeTaskStatus } = useTransition();
+	const { getTransition, changeTaskStatus, addFileInJiraTask } =
+		useTransition();
 	const state = useAppStore((state) => state);
 
 	const {
@@ -33,60 +34,77 @@ export const JiraAddTasks = () => {
 			);
 			throw new Error("Не выбран проект или тип Задачи в Jira");
 		}
-		for (const {
-			userId,
-			description,
-			authorId,
-			title,
-			boardColumnId,
-		} of data.tasks) {
-			const { id } = await addTask({
-				fields: {
-					// исполнитель
-					...(userId && usersMap[userId]
-						? {
-								assignee: {
-									id: usersMap[userId],
-								},
-							}
-						: {}),
-					// автор
-					...(authorId && usersMap[authorId]
-						? {
-								reporter: {
-									id: usersMap[authorId],
-								},
-							}
-						: {}),
-					description: description || "",
-					project: {
-						id: jiraProjectId,
-					},
-					// Тип задачи (задача, подзадача, Epic...)
-					issuetype: {
-						id: jiraTasksTypeId,
-					},
-					// название задачи
-					summary: title,
+		await Promise.all(
+			data.tasks.map(
+				async ({
+					userId,
+					description,
+					authorId,
+					title,
+					boardColumnId,
+					attachments,
+				}) => {
+					console.log(attachments);
+					const { id } = await addTask({
+						fields: {
+							// исполнитель
+							...(userId && usersMap[userId]
+								? {
+										assignee: {
+											id: usersMap[userId],
+										},
+									}
+								: {}),
+							// автор
+							...(authorId && usersMap[authorId]
+								? {
+										reporter: {
+											id: usersMap[authorId],
+										},
+									}
+								: {}),
+							description: description || "",
+							project: {
+								id: jiraProjectId,
+							},
+							// Тип задачи (задача, подзадача, Epic...)
+							issuetype: {
+								id: jiraTasksTypeId,
+							},
+							// название задачи
+							summary: title,
+						},
+					});
+					const { transitions } = await getTransition(id);
+
+					// берем из сопоставленных категорий id категории жира находим ее в массиве transitions по полям to.id
+					// и достаем из найденного объекта targetTransitions id это и будет categoryId
+					const targetTransition = transitions.find(
+						({ to }) => to.id === statusesMap[boardColumnId],
+					);
+
+					if (!targetTransition) {
+						toast(`Не удалось поменять статус задачи ${title}`, {
+							type: "error",
+						});
+						throw new Error(`Не удалось поменять статус задачи ${title}`);
+					}
+
+					await changeTaskStatus({
+						categoryId: targetTransition.id,
+						taskId: id,
+					});
+
+					if (attachments?.length) {
+						const formData = new FormData();
+						for (const item of attachments) {
+							formData.append("file", item.blob, item.name);
+						}
+						await addFileInJiraTask({ taskId: id, formData });
+					}
 				},
-			});
-			const { transitions } = await getTransition(id);
-
-			// берем из сопоставленных категорий id категории жира находим ее в массиве transitions по полям to.id
-			// и достаем из найденного объекта targetTransitions id это и будет categoryId
-			const targetTransition = transitions.find(
-				({ to }) => to.id === statusesMap[boardColumnId],
-			);
-
-			if (!targetTransition) {
-				toast(`Не удалось поменять статус задачи ${title}`, {
-					type: "error",
-				});
-				throw new Error(`Не удалось поменять статус задачи ${title}`);
-			}
-
-			await changeTaskStatus({ categoryId: targetTransition.id, taskId: id });
-		}
+			),
+		);
 	};
 
 	return (

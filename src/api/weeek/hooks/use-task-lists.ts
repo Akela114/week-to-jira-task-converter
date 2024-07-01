@@ -15,16 +15,16 @@ export const useTasksList = (
         return {
           boardColumns,
           tasks: await Promise.all(tasks.map(async (task) => ({
-          ...task,
-          boardColumnName: boardColumns.find((column) => column.id === task.boardColumnId)?.name,
-          attachments: await Promise.all(
-            task.attachments.map(async (attachment) => ({
-              ...attachment,
-              blob: await downloadWeekFile(attachment.url),
-          }))
-        )
-        })))
-      }
+            ...task,
+            boardColumnName: boardColumns.find((column) => column.id === task.boardColumnId)?.name,
+            attachments: await Promise.all(
+              task.attachments.map(async (attachment) => ({
+                ...attachment,
+                blob: await downloadWeekFile(attachment.url),
+              }))
+            )
+          })))
+        }
       }
     },
     enabled: Boolean(projectId && boardId),

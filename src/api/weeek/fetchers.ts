@@ -80,7 +80,7 @@ export const getWorkspaceMembers = async () => {
 
 export const downloadWeekFile = async (url: string) => {
   const { data } = await axios.get<Blob>(
-		`/week-file/${url.replace("https://api.weeek.net/ws", "")}`, {
+		`/week-file${url.replace("https://api.weeek.net/ws", "")}`, {
 			responseType: "blob",
 		}
 	);

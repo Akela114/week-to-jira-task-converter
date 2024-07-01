@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query"
-import { changeTaskStatus, createTask, getTransition } from "../fetchers"
+import { addJiraFileInTask, changeTaskStatus, createTask, getTransition } from "../fetchers"
 import type { CreateTaskBody } from "../types"
 import { withToastMessages } from "@/lib/utils/with-toast-messages"
 
@@ -25,5 +25,9 @@ export const useTransition = () => {
     mutationFn: ({taskId, categoryId}: {taskId: string, categoryId: string}) => changeTaskStatus(taskId, categoryId )
   })
 
-  return { getTransition: mutateAsync, changeTaskStatus: changeTask };
+  const {mutateAsync: addFileInJiraTask} = useMutation({
+    mutationFn: ({taskId, formData}: {taskId: string, formData: FormData}) => addJiraFileInTask(taskId, formData )
+  })
+
+  return { getTransition: mutateAsync, changeTaskStatus: changeTask, addFileInJiraTask };
 }
