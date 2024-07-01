@@ -6,6 +6,7 @@ import type {
 	GetBoardColumnTaskList,
 	GetBoardListData,
 	GetProjectsListData,
+	GetBoardTask,
 } from "./types";
 
 export const getProjectsList = async () => {
@@ -50,12 +51,13 @@ export const getBoardColumnList = async ({ boardId }: { boardId: string }) => {
 	throw Error(data.message);
 };
 
-export const getBoardTaskList = async ({ boardId }: { boardId: string }) => {
+export const getBoardParentTaskList = async ({ boardId }: { boardId: string }) => {
 	const { data } = await weeekAPIInstance.get<GetBoardColumnTaskList>(
 		"/tm/tasks",
 		{
 			params: {
 				boardId,
+				all: 1
 			},
 		},
 	);
@@ -66,6 +68,18 @@ export const getBoardTaskList = async ({ boardId }: { boardId: string }) => {
 
 	throw Error(data.message);
 };
+
+export const getTaskById = async ({ taskId }: { taskId: number }) => {
+	const { data } = await weeekAPIInstance.get<GetBoardTask>(
+		`/tm/tasks/${taskId}`
+	);
+
+	if (data.success) {
+		return data;
+	}
+
+	throw Error(data.message);
+}
 
 export const getWorkspaceMembers = async () => {
 	const { data } =
