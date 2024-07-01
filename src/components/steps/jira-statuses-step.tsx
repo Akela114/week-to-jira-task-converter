@@ -12,6 +12,7 @@ import { useAppStore } from "@/store/app-store";
 
 export const JiraStatusesStep = () => {
 	const jiraProject = useAppStore((state) => state.jiraProjectId);
+	const usersMap = useAppStore((state) => state.usersMap);
 	const jiraTasksTypeId = useAppStore((state) => state.jiraTasksTypeId);
 	const setJiraTasksTypeId = useAppStore((state) => state.setJiraTasksTypeId);
 	const resetJiraTasksTypeId = useAppStore(
@@ -50,37 +51,10 @@ export const JiraStatusesStep = () => {
 						</SelectTrigger>
 						<SelectContent>{TypeSelectOptions}</SelectContent>
 					</Select>
-					{/* <Table className="w-max">
-						<TableCaption>Статусы из JIRA</TableCaption>
-						<TableHeader>
-							<TableRow>
-								<TableHead>ID</TableHead>
-								<TableHead className="text-right">Название</TableHead>
-							</TableRow>
-						</TableHeader>
-						<TableBody>
-							{data
-								?.find(({ id }) => selectedTypeTaskId === id)
-								?.statuses?.map((status) => (
-									<TableRow key={status.id}>
-										<TableCell>{status.id}</TableCell>
-										<TableCell className="text-right">{status.name}</TableCell>
-									</TableRow>
-								))}
-						</TableBody>
-					</Table>
-					<div className="flex gap-2 items-center text-xs">
-						<p className="text-center">
-							Если необходимо, редактируйте <br /> колонки в интерфейсе JIRA и{" "}
-						</p>
-						<Button variant="outline" onClick={() => refetch()}>
-							Обновить
-						</Button>
-					</div> */}
 				</Interceptor>
 			}
-			title="Шаг 6. Выбор типа задач, который будет использован при создании задач в Jira"
-			isActive={!!jiraProject}
+			title="Шаг 7. Выбор типа задач, который будет использован при создании задач в Jira"
+			isActive={!!usersMap}
 		/>
 	);
 };

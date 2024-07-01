@@ -225,3 +225,17 @@ export interface StatusCategory {
   name?: string
   self: string
 }
+
+export type GetProjectRolesResponse = Record<string, string>;
+
+export type GetProjectDetailsResponse = {
+  actors: {
+    displayName: string;
+    id: number;
+    name: string;
+    type: string;
+    actorUser?: {
+      accountId: string;
+    }
+  }[];
+}

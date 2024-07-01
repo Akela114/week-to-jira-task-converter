@@ -10,4 +10,6 @@ export const JIRA_QUERY_KEYS = {
   users: 'users',
   projectStatuses: "project_statuses",
   transition: "trasition",
+  projectRoles: "project_roles",
+  projectRole: "project_role"
 }

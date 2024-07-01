@@ -6,6 +6,7 @@ type AppStore = {
   boardId?: string;
   usersMap?: Record<string, string>;
   jiraProjectId?: string;
+  jiraRoleId?: string;
   jiraTasksTypeId?: string;
   statusesMap?: Record<string, string>;
   isReadyAddTasks?: boolean;
@@ -17,6 +18,8 @@ type AppStore = {
   resetUsersMap: () => void;
   setJiraProjectId: (id: string) => void;
   resetJiraProjectId: () => void;
+  setJiraRoleId: (id: string) => void;
+  resetJiraRoleId: () => void;
   setJiraTasksTypeId: (id: string) => void;
   resetJiraTasksTypeId: () => void;
   setTaskStatusesMap: (map: Record<string, string>) => void;
@@ -32,14 +35,16 @@ export const useAppStore = create(
       boardId: undefined,
       usersMap: undefined,
       isReadyAddTasks: false,
-      setProjectId: (id: string) => set({ projectId: id, boardId: undefined, usersMap: undefined, jiraProjectId: undefined, jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false }),
-      resetProjectId: () => set({ projectId: undefined, boardId: undefined, usersMap: undefined, jiraProjectId: undefined, jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false }),
-      setBoardId: (id: string) => set({ boardId: id, usersMap: undefined, jiraProjectId: undefined, jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false }),
-      resetBoardId: () => set({ boardId: undefined, usersMap: undefined, jiraProjectId: undefined, jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false }),
-      setUsersMap: (map: Record<string, string>) => set({ usersMap: map, jiraProjectId: undefined, jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false }),
-      resetUsersMap: () => set({ usersMap: undefined, jiraProjectId: undefined, jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false }),
-      setJiraProjectId: (id: string) => set({ jiraProjectId: id, jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false }),
-      resetJiraProjectId: () => set({ jiraProjectId: undefined, jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false }),
+      setProjectId: (id: string) => set({ projectId: id, boardId: undefined, usersMap: undefined, jiraProjectId: undefined, jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false, jiraRoleId: undefined }),
+      resetProjectId: () => set({ projectId: undefined, boardId: undefined, usersMap: undefined, jiraProjectId: undefined, jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false, jiraRoleId: undefined }),
+      setBoardId: (id: string) => set({ boardId: id, usersMap: undefined, jiraProjectId: undefined, jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false, jiraRoleId: undefined }),
+      resetBoardId: () => set({ boardId: undefined, usersMap: undefined, jiraProjectId: undefined, jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false, jiraRoleId: undefined }),
+      setJiraProjectId: (id: string) => set({ jiraProjectId: id, jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false, jiraRoleId: undefined }),
+      resetJiraProjectId: () => set({ jiraProjectId: undefined, jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false, jiraRoleId: undefined }),
+      setJiraRoleId: (id: string) => set({ jiraRoleId: id, usersMap: undefined, jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false }),
+      resetJiraRoleId: () => set({ jiraRoleId: undefined, usersMap: undefined, jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false }),
+      setUsersMap: (map: Record<string, string>) => set({ usersMap: map, statusesMap: undefined, isReadyAddTasks: false }),
+      resetUsersMap: () => set({ usersMap: undefined, statusesMap: undefined, isReadyAddTasks: false }),
       setJiraTasksTypeId: (id: string) => set({ jiraTasksTypeId: id, statusesMap: undefined, isReadyAddTasks: false }),
       resetJiraTasksTypeId: () => set({ jiraTasksTypeId: undefined, statusesMap: undefined, isReadyAddTasks: false }),
       setTaskStatusesMap: (map: Record<string, string>) => set({ statusesMap: map }),

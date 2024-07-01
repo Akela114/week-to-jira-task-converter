@@ -5,6 +5,7 @@ import { Button } from "@/shared/ui/button";
 import { useAppStore } from "@/store/app-store";
 import { Interceptor } from "../interceptor";
 import { toast } from "react-toastify";
+import { Step } from "@/shared/ui/step";
 
 export const JiraAddTasks = () => {
 	const { mutateAsync: addTask } = useTasks();
@@ -74,17 +75,23 @@ export const JiraAddTasks = () => {
 	};
 
 	return (
-		<Interceptor status={status} errorMessage={error?.message}>
-			<Button
-				variant="default"
-				onClick={onAddTasks}
-				disabled={!isReadyAddTasks}
-				className={cn("cursor-pointer opacity-90 mt-6 ml-5", {
-					"opacity-30": !isReadyAddTasks,
-				})}
-			>
-				Добавить задачи
-			</Button>
-		</Interceptor>
+		<Step
+			title="Шаг 8. Загрузка задача в Jira"
+			content={
+				<Interceptor status={status} errorMessage={error?.message}>
+					<Button
+						variant="default"
+						onClick={onAddTasks}
+						disabled={!isReadyAddTasks}
+						className={cn("cursor-pointer opacity-90", {
+							"opacity-30": !isReadyAddTasks,
+						})}
+					>
+						Добавить задачи
+					</Button>
+				</Interceptor>
+			}
+			isActive={isReadyAddTasks}
+		/>
 	);
 };

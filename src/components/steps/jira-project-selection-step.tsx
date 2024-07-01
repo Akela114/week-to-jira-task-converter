@@ -8,17 +8,19 @@ import {
 	SelectValue,
 } from "@/shared/ui/select";
 import { useJiraProjectsList } from "@/api/jira/hooks/use-projects";
-import { AddProjectModal } from "../addProjectModal";
 import { useAppStore } from "@/store/app-store";
+import { useTasksList } from "@/api/weeek/hooks/use-task-lists";
 
 export const JiraProjectSelectionStep = () => {
 	const { data, status, error } = useJiraProjectsList();
 
+	const projectId = useAppStore((state) => state.projectId);
+	const boardId = useAppStore((state) => state.boardId);
+	const { status: weekTasksStatus } = useTasksList({ projectId, boardId });
+
 	const jiraProjectId = useAppStore((state) => state.jiraProjectId);
 	const setJiraProjectId = useAppStore((state) => state.setJiraProjectId);
 	const resetJiraProjectId = useAppStore((state) => state.resetJiraProjectId);
-
-	const usersMap = useAppStore((store) => store.usersMap);
 
 	const projectSelectOptions = data?.map((project) => (
 		<SelectItem value={String(project.id)} key={project.id}>
@@ -35,7 +37,7 @@ export const JiraProjectSelectionStep = () => {
 
 	return (
 		<Step
-			title="Шаг 5. Выбор проекта в JIRA"
+			title="Шаг 4. Выбор проекта в JIRA"
 			content={
 				<Interceptor status={status} errorMessage={error?.message}>
 					<div className="flex gap-4 items-center">
@@ -52,11 +54,10 @@ export const JiraProjectSelectionStep = () => {
 							</SelectTrigger>
 							<SelectContent>{projectSelectOptions}</SelectContent>
 						</Select>
-						<AddProjectModal />
 					</div>
 				</Interceptor>
 			}
-			isActive={Boolean(usersMap)}
+			isActive={weekTasksStatus === "success"}
 		/>
 	);
 };
