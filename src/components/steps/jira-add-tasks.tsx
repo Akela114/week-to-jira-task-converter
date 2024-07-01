@@ -25,13 +25,12 @@ export const JiraAddTasks = () => {
 		jiraProjectId,
 		usersMap,
 		statusesMap,
-		tasksMap,
-		setTasksMap,
 	} = state;
 	const { data, status, error } = useTasksList({ projectId, boardId });
 	const { mutateAsync: editParentId } = useEditParentId();
 
 	const onAddTasks = async () => {
+		const tasksMapping = new Map();
 		if (!data?.tasks) return;
 		if (!jiraProjectId || !jiraTasksTypeId || !usersMap || !statusesMap) {
 			toast(
@@ -51,7 +50,6 @@ export const JiraAddTasks = () => {
 					title,
 					boardColumnId,
 					attachments,
-					parentId,
 					id: weekTaskId,
 				}) => {
 					const { id } = await addTask({
@@ -84,8 +82,7 @@ export const JiraAddTasks = () => {
 							summary: title,
 						},
 					});
-
-					setTasksMap({ ...tasksMap, [weekTaskId]: id });
+					tasksMapping.set(weekTaskId, id);
 
 					const { transitions } = await getTransition(id);
 
@@ -117,15 +114,17 @@ export const JiraAddTasks = () => {
 				},
 			),
 		);
-		if (!tasksMap) return;
+		if (!tasksMapping.size) return;
 		await Promise.all(
 			data.tasks
 				.filter(({ parentId }) => parentId)
 				.map(async ({ id, parentId }) => {
-					if (parentId && id) {
+					const taskId = id && tasksMapping.get(id);
+					const parentId2 = parentId && tasksMapping.get(parentId);
+					if (parentId2 && taskId) {
 						await editParentId({
-							taskId: tasksMap[id],
-							parentId: tasksMap[parentId],
+							taskId: taskId,
+							parentId: parentId2,
 						});
 					}
 				}),
