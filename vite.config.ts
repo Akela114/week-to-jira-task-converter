@@ -28,6 +28,12 @@ export default defineConfig(({ mode }) => {
           secure: false,
           rewrite: (p) => p.replace(/^\/jira-api/, ""),
         },
+        "/week-file": {
+          target: "https://api.weeek.net/ws",
+          changeOrigin: true,
+          secure: false,
+          rewrite: (p) => p.replace(/^\/week-file/, ""),
+        }
       },
     },
     preview: {
@@ -38,6 +44,12 @@ export default defineConfig(({ mode }) => {
           secure: false,
           rewrite: (p) => p.replace(/^\/jira-api/, ""),
         },
+        "/week-file": {
+          target: "https://api.weeek.net/ws",
+          changeOrigin: true,
+          secure: false,
+          rewrite: (p) => p.replace(/^\/week-file/, ""),
+        }
       },
     },
   }

@@ -1,7 +1,7 @@
 import { useAddJiraProject } from "@/api/jira/hooks/use-projects";
 import { CustomModal } from "@/shared/ui/custom-modal";
 import { Input } from "@/shared/ui/input";
-import { useState, type FC } from "react";
+import { useState } from "react";
 import { Interceptor } from "./interceptor";
 import { useJiraUsers } from "@/api/jira/hooks/use-users";
 import {
@@ -11,24 +11,15 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/shared/ui/select";
-import { useJiraStore } from "@/store/jira-store";
 import { toast } from "react-toastify";
 
-interface IModalProps {
-	title: string;
-	onConfirm: () => void;
-	description?: string;
-}
-
-export const AddProjectModal: FC<IModalProps> = () => {
+export const AddProjectModal = () => {
 	const [formState, setFormState] = useState({ name: "", key: "" });
 	const [isError, setError] = useState(false);
+	const [selectedUserId, setSelectedUserId] = useState<string>();
 
 	const { data, error, status } = useJiraUsers();
 	const { mutateAsync: addProject } = useAddJiraProject();
-
-	const selectedUserId = useJiraStore((store) => store.selectedJiraUser);
-	const setSelectedUser = useJiraStore((state) => state.setSelectedJiraUser);
 
 	const userSelectOptions = data
 		?.filter(({ accountType }) => accountType !== "app")
@@ -56,7 +47,7 @@ export const AddProjectModal: FC<IModalProps> = () => {
 				}
 				toast("Не выбран руководитель проекта");
 			}}
-			toggleButtonText="Создайте проект"
+			toggleButtonText="Создать проект"
 		>
 			<div className="grid gap-4 py-4">
 				<Input
@@ -90,7 +81,7 @@ export const AddProjectModal: FC<IModalProps> = () => {
 								if (isError) {
 									setError(false);
 								}
-								setSelectedUser(value);
+								setSelectedUserId(value);
 							}}
 							value={
 								data?.some((user) => String(user.accountId) === selectedUserId)

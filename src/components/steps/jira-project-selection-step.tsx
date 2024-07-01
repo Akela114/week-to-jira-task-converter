@@ -8,20 +8,17 @@ import {
 	SelectValue,
 } from "@/shared/ui/select";
 import { useJiraProjectsList } from "@/api/jira/hooks/use-projects";
-import { useJiraStore } from "@/store/jira-store";
 import { AddProjectModal } from "../addProjectModal";
-import { useWeeekStore } from "@/store/weeek-store";
+import { useAppStore } from "@/store/app-store";
 
 export const JiraProjectSelectionStep = () => {
 	const { data, status, error } = useJiraProjectsList();
 
-	const selectedProjectId = useJiraStore((store) => store.selectedProjectId);
-	const setSelectedProjectId = useJiraStore(
-		(state) => state.setSelectedProjectId,
-	);
+	const jiraProjectId = useAppStore((state) => state.jiraProjectId);
+	const setJiraProjectId = useAppStore((state) => state.setJiraProjectId);
+	const resetJiraProjectId = useAppStore((state) => state.resetJiraProjectId);
 
-	const selectedJiraUserId = useJiraStore((store) => store.selectedJiraUser);
-	const selectedWeeekUserId = useWeeekStore((store) => store.userId);
+	const usersMap = useAppStore((store) => store.usersMap);
 
 	const projectSelectOptions = data?.map((project) => (
 		<SelectItem value={String(project.id)} key={project.id}>
@@ -29,19 +26,24 @@ export const JiraProjectSelectionStep = () => {
 		</SelectItem>
 	));
 
+	if (
+		status === "success" &&
+		!data.some((project) => project.id === jiraProjectId)
+	) {
+		resetJiraProjectId();
+	}
+
 	return (
 		<Step
-			title="Шаг 5. Выберите проект в JIRA"
+			title="Шаг 5. Выбор проекта в JIRA"
 			content={
-				<div className="flex gap-4 items-center">
-					<Interceptor status={status} errorMessage={error?.message}>
+				<Interceptor status={status} errorMessage={error?.message}>
+					<div className="flex gap-4 items-center">
 						<Select
-							onValueChange={setSelectedProjectId}
+							onValueChange={setJiraProjectId}
 							value={
-								data?.some(
-									(project) => String(project.id) === selectedProjectId,
-								)
-									? selectedProjectId
+								data?.some((project) => project.id === jiraProjectId)
+									? jiraProjectId
 									: undefined
 							}
 						>
@@ -50,15 +52,11 @@ export const JiraProjectSelectionStep = () => {
 							</SelectTrigger>
 							<SelectContent>{projectSelectOptions}</SelectContent>
 						</Select>
-					</Interceptor>
-					<p>ИЛИ</p>
-					<AddProjectModal
-						title="Создать новый проект в JIRA"
-						onConfirm={() => console.log("sadsad")}
-					/>
-				</div>
+						<AddProjectModal />
+					</div>
+				</Interceptor>
 			}
-			isActive={!!selectedJiraUserId && !!selectedWeeekUserId}
+			isActive={Boolean(usersMap)}
 		/>
 	);
 };

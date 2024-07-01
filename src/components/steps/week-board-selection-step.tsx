@@ -1,6 +1,6 @@
 import { useBoardList } from "@/api/weeek/hooks/use-board-list";
 import { Step } from "@/shared/ui/step";
-import { useWeeekStore } from "@/store/weeek-store";
+import { useAppStore } from "@/store/app-store";
 import { Interceptor } from "../interceptor";
 import {
 	Select,
@@ -11,11 +11,11 @@ import {
 } from "@/shared/ui/select";
 
 export const WeekBoardSelectionStep = () => {
-	const projectId = useWeeekStore((state) => state.projectId);
+	const projectId = useAppStore((state) => state.projectId);
 	const { data, status, error } = useBoardList({ projectId });
-	const boardId = useWeeekStore((state) => state.boardId);
-	const setBoardId = useWeeekStore((state) => state.setBoardId);
-	const resetBoardId = useWeeekStore((state) => state.resetBoardId);
+	const boardId = useAppStore((state) => state.boardId);
+	const setBoardId = useAppStore((state) => state.setBoardId);
+	const resetBoardId = useAppStore((state) => state.resetBoardId);
 
 	const boardSelectOptions = data?.boards.map((board) => (
 		<SelectItem value={String(board.id)} key={board.id}>

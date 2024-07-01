@@ -1,4 +1,4 @@
-import type { FC, ReactNode } from "react";
+import { useState, type FC, type ReactNode } from "react";
 import { Button } from "./button";
 import {
 	Dialog,
@@ -7,12 +7,11 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-	DialogTrigger,
 } from "./dialog";
 
 interface ICustomModal {
 	title: string;
-	onConfirm: () => void;
+	onConfirm: () => Promise<void>;
 	toggleButtonText: string;
 	confirmButtonText: string;
 	children: ReactNode;
@@ -27,19 +26,30 @@ export const CustomModal: FC<ICustomModal> = ({
 	confirmButtonText,
 	children,
 }) => {
+	const [isOpen, setIsOpen] = useState(false);
+
 	return (
-		<Dialog>
-			<DialogTrigger asChild>
-				<Button variant="outline">{toggleButtonText}</Button>
-			</DialogTrigger>
-			<DialogContent className="sm:max-w-[425px]">
+		<Dialog open={isOpen}>
+			<Button variant="outline" onClick={() => setIsOpen(!isOpen)}>
+				{toggleButtonText}
+			</Button>
+			<DialogContent
+				className="sm:max-w-[425px]"
+				onClose={() => setIsOpen(false)}
+			>
 				<DialogHeader>
 					<DialogTitle>{title}</DialogTitle>
 					<DialogDescription>{description}</DialogDescription>
 				</DialogHeader>
 				{children}
 				<DialogFooter>
-					<Button type="submit" onClick={onConfirm}>
+					<Button
+						type="submit"
+						onClick={async () => {
+							await onConfirm();
+							setIsOpen(false);
+						}}
+					>
 						{confirmButtonText}
 					</Button>
 				</DialogFooter>

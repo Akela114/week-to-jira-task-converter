@@ -7,14 +7,14 @@ import {
 	SelectItem,
 } from "@/shared/ui/select";
 import { Step } from "@/shared/ui/step";
-import { useWeeekStore } from "@/store/weeek-store";
+import { useAppStore } from "@/store/app-store";
 import { Interceptor } from "../interceptor";
 
 export const WeekProjectSelectionStep = () => {
 	const { data, status, error } = useProjectsList();
-	const projectId = useWeeekStore((state) => state.projectId);
-	const setProjectId = useWeeekStore((state) => state.setProjectId);
-	const resetProjectId = useWeeekStore((state) => state.resetProjectId);
+	const projectId = useAppStore((state) => state.projectId);
+	const setProjectId = useAppStore((state) => state.setProjectId);
+	const resetProjectId = useAppStore((state) => state.resetProjectId);
 
 	const projectSelectOptions = data?.projects.map((project) => (
 		<SelectItem value={String(project.id)} key={project.id}>
