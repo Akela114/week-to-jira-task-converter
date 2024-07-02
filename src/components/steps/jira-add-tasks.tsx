@@ -88,10 +88,19 @@ export const JiraAddTasks = () => {
 		};
 
 		let tasksToAdd: typeof data.tasks = data.tasks;
+		let counter = 1;
 		while (tasksToAdd.length) {
-			const tasksToAddCopy: typeof data.tasks = [];
+			const tasksToAddCopy = [];
 			for (let idx = 0; idx < tasksToAdd.length; idx++) {
 				const taskToAdd = tasksToAdd[idx];
+				logs.tasksInfo[taskToAdd.id] = {
+					status: "skipped",
+				};
+
+				if (taskToAdd.parentId && !tasksMapping.get(taskToAdd.parentId)) {
+					tasksToAddCopy.push(taskToAdd);
+					continue;
+				}
 				try {
 					await withToastMessages(
 						async () => {
@@ -106,15 +115,6 @@ export const JiraAddTasks = () => {
 								parentId,
 								comments,
 							} = taskToAdd;
-
-							logs.tasksInfo[weekTaskId] = {
-								status: "skipped",
-							};
-
-							if (parentId && !tasksMapping.get(parentId)) {
-								tasksToAddCopy.push(taskToAdd);
-								return;
-							}
 
 							try {
 								const { id } = await addTask({
@@ -231,14 +231,12 @@ export const JiraAddTasks = () => {
 								throw err;
 							}
 						},
-						getToastMessages(idx + 1, tasksToAdd.length),
+						getToastMessages(counter++, data.tasks.length),
 					)();
-				} catch {
-				} finally {
-					tasksToAdd =
-						tasksToAddCopy.length < tasksToAdd.length ? tasksToAddCopy : [];
-				}
+				} catch {}
 			}
+			tasksToAdd =
+				tasksToAddCopy.length < tasksToAdd.length ? tasksToAddCopy : [];
 		}
 		const blob = new Blob([JSON.stringify(logs, null, 2)], {
 			type: "application/json",

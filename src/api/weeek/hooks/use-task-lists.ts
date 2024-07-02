@@ -39,10 +39,14 @@ export const useTasksList = ({
 			if (projectId && boardId) {
 				const { boardColumns } = await getBoardColumnList({ boardId });
 				const { tasks } = await getBoardParentTaskList({ boardId });
+				const tasksWithoutDuplicatedSubtasks = tasks.map((task) => ({
+					...task,
+					subTasks: task.subTasks.filter((taskId) => !tasks.some((t) => t.id === taskId)),
+				}))
         
         const tasksWithSubtasks = [
-          ...tasks,
-          ...(await Promise.all(tasks.map(getSubtasks))).flat(),
+          ...tasksWithoutDuplicatedSubtasks,
+          ...(await Promise.all(tasksWithoutDuplicatedSubtasks.map(getSubtasks))).flat(),
         ]
 
 				return {
