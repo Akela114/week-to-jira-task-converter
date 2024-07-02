@@ -132,20 +132,42 @@ export type GetWeekComments = {
   }
 }
 
-const weeekParagraphSchema = z.object({
+export const weekTextMarksSchema = z.array(z.discriminatedUnion("type", [
+  z.object({
+   type: z.literal("bold")
+  }), 
+  z.object({
+   type: z.literal("italic")
+  }), 
+  z.object({
+   type: z.literal("underline")
+  }), 
+  z.object({
+   type: z.enum(["strike", "line-through"])
+  }),
+ ]
+).or(z.object({
+ type: z.string(),
+})))
+
+export const weeekParagraphSchema = z.object({
   type: z.literal("paragraph"),
-    content: z.array(z.discriminatedUnion("type", [
-      z.object({
-        type: z.literal("text"),
-        text: z.string()
-      }),
-      z.object({
-        type: z.literal("mention"),
-      })
-  ]))
+  content: z.array(z.discriminatedUnion("type", [
+    z.object({
+      type: z.literal("text"),
+      text: z.string(),
+      marks: weekTextMarksSchema.optional()
+    }),
+    z.object({
+      type: z.literal("mention"),
+    }),
+    z.object({
+      type: z.literal("line_break"),
+    }),
+  ])).optional()
 });
 
-const weeekHeadingSchema = z.object({
+export const weeekHeadingSchema = z.object({
   type: z.literal("heading"),
   attrs: z.object({
     level: z.number()
@@ -158,40 +180,14 @@ const weeekHeadingSchema = z.object({
     )
 });
 
-const weekImageSchema = z.object({
-  type: z.literal("image"),
-  content: z.array(
-    z.object({
-      type: z.literal("text"),
-      text: z.string()
-    })
-  ),
-  attrs: z.object({
-    src: z.string()
-  })
-});
-
-const weeekVideoSchema =  z.object({
-  type: z.literal("video"),
-  attrs: z.object({
-    video: z.object({
-      link: z.string(),
-      name: z.string()
-    })
-  })
-})
-
 const weeekFileSchema = z.object({
-  type: z.literal("file"),
+  type: z.enum(["image", "file", "video"]),
   attrs: z.object({
-    file: z.object({
-      link: z.string(),
-      name: z.string()
-    })
-  }),
+    name: z.string()
+  })
 })
 
-const weeekListSchema = z.object({
+export const weeekListSchema = z.object({
   type: z.enum(["ordered_list", "bullet_list"]),
   content: z.array(
     z.object({
@@ -224,17 +220,28 @@ const weeekCalloutSchema = z.object({
   type: z.literal("colout"),
   content: z.array(z.discriminatedUnion("type", [
     weeekParagraphSchema,
-    weekImageSchema,
-    weeekVideoSchema,
     weeekFileSchema,
     weeekListSchema,
     weeekHeadingSchema,
     weeekHrSchema,
     weeekCodeSchema,
     z.object({
-      type: z.enum(["colout", "task_list", "toggle_list", "table"]),
+      type: z.literal("colout"),
+      content: z.any()
     }),
-  ]))
+    z.object({
+      type: z.literal("task_list"),
+      content: z.any()
+    }),
+    z.object({
+      type: z.literal("toggle_list"),
+      content: z.any()
+    }),
+    z.object({
+      type: z.literal("table"),
+      content: z.any()
+    }),
+  ])).nullish()
 })
 
 const weekToggleListSchema = z.object({
@@ -258,8 +265,6 @@ const weekToggleListSchema = z.object({
               type: z.literal("toggle_list_content"),
               content: z.array(z.discriminatedUnion("type", [
                 weeekParagraphSchema,
-                weekImageSchema,
-                weeekVideoSchema,
                 weeekFileSchema,
                 weeekListSchema,
                 weeekHeadingSchema,
@@ -267,14 +272,23 @@ const weekToggleListSchema = z.object({
                 weeekCalloutSchema,
                 weeekCodeSchema,
                 z.object({
-                  type: z.enum(["task_list", "toggle_list", "table"]),
-                })
+                  type: z.literal("task_list"),
+                  content: z.any()
+                }),
+                z.object({
+                  type: z.literal("toggle_list"),
+                  content: z.any()
+                }),
+                z.object({
+                  type: z.literal("table"),
+                  content: z.any()
+                }),
               ])),
             }),
           ])
         )
     })
-  )
+  ).nullish()
 })
 
 const weekTaskListSchema = z.object({
@@ -287,8 +301,6 @@ const weekTaskListSchema = z.object({
       }),
       content: z.array(z.discriminatedUnion("type", [
         weeekParagraphSchema,
-        weekImageSchema,
-        weeekVideoSchema,
         weeekFileSchema,
         weeekListSchema,
         weeekHeadingSchema,
@@ -297,14 +309,19 @@ const weekTaskListSchema = z.object({
         weeekCodeSchema,
         weekToggleListSchema,
         z.object({
-          type: z.enum(["task_list", "table"]),
-        })
+          type: z.literal("task_list"),
+          content: z.any()
+        }),
+        z.object({
+          type: z.literal("table"),
+          content: z.any()
+        }),
       ])),
     })
-  )
+  ).nullish()
 })
 
-const weekTableSchema = z.object({
+export const weeekTableSchema = z.object({
   type: z.literal("table"),
   content: z.array(
     z.object({
@@ -318,8 +335,6 @@ const weekTableSchema = z.object({
           }),
           content: z.array(z.discriminatedUnion("type", [
             weeekParagraphSchema,
-            weekImageSchema,
-            weeekVideoSchema,
             weeekFileSchema,
             weeekListSchema,
             weeekHeadingSchema,
@@ -330,17 +345,16 @@ const weekTableSchema = z.object({
             weeekCalloutSchema,
             z.object({
               type: z.literal("table"),
+              content: z.any()
             })
           ]))
         })
       )
-    }))
+    })).nullish()
 })
 
 export const weeekContentArraySchema = z.array(z.discriminatedUnion("type", [
   weeekParagraphSchema,
-  weekImageSchema,
-  weeekVideoSchema,
   weeekFileSchema,
   weeekListSchema,
   weeekHeadingSchema,
@@ -348,7 +362,7 @@ export const weeekContentArraySchema = z.array(z.discriminatedUnion("type", [
   weekTaskListSchema,
   weeekHrSchema,
   weeekCodeSchema,
-  weekTableSchema,
+  weeekTableSchema,
   weeekCalloutSchema
 ]))
 
@@ -371,5 +385,7 @@ export const getWeeekCommentsSchema = z.object({
     )
   })
 })
+
+export type WeeekComment = z.infer<typeof weeekContentArraySchema>
 
 export type GetWeeekComments = TWeekAPIResponse<z.infer<typeof getWeeekCommentsSchema>>

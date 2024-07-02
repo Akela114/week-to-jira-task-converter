@@ -8,6 +8,10 @@ import {
 	getWeeekComments,
 } from "../fetchers";
 import type { Task } from "../types";
+import { transformWeekCommentToJira } from "@/lib/utils/transform-weeek-comment-to-jira";
+import TurndownService from 'turndown';
+
+const turndownService = new TurndownService()
 
 const getSubtasks = async ({subTasks, boardColumnId}: Task): Promise<Task[]> => {
   if (subTasks?.length) {
@@ -46,6 +50,7 @@ export const useTasksList = ({
 					tasks: await Promise.all(
 						tasksWithSubtasks.map(async (task) => ({
 							...task,
+							description: turndownService.turndown(task.description ?? ""),
 							boardColumnName: boardColumns.find(
 								(column) => column.id === task.boardColumnId,
 							)?.name,
@@ -55,7 +60,10 @@ export const useTasksList = ({
 									blob: await downloadWeekFile(attachment.url),
 								})),
 							),
-							comments: await getWeeekComments(task.id),
+							comments: await getWeeekComments(task.id)
+								.then((comments) => comments.map(
+									(comment) => transformWeekCommentToJira(comment.content.data.content))
+							),
 						})),
 					),
 				};

@@ -9,6 +9,8 @@ export const WeekTaskFetchingStep = () => {
 	const boardId = useAppStore((state) => state.boardId);
 	const { data, status, error } = useTasksList({ projectId, boardId });
 
+	console.log(data);
+
 	return (
 		<Step
 			title="Шаг 3. Загрузка задач"

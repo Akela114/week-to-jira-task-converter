@@ -106,7 +106,7 @@ export const downloadWeekFile = async (url: string) => {
 
 export const getWeeekComments = async (taskId: number) => {
   const { data } = await axios.get<GetWeeekComments>(
-		`/week-ws/583893/tm/tasks/${taskId}`, {
+		`/week-ws/${import.meta.env.VITE_WEEEK_WORKSPACE_ID}/tm/tasks/${taskId}`, {
 			withCredentials: true,
 		}
 	);

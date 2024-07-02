@@ -98,3 +98,10 @@ export const linkParentIdForTask = async (taskId: string, parentTaskId: string) 
   })
   return data;
 }
+
+export const addJiraComment = async (taskId: string, comment: string) => {
+	const { data } = await jiraAPIInstance.post(`/issue/${taskId}/comment`, {
+		body: comment
+	})
+	return data;
+}

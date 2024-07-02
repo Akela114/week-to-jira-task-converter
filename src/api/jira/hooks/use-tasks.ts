@@ -1,17 +1,10 @@
 import { useMutation } from "@tanstack/react-query"
-import { addJiraFileInTask, changeTaskStatus, createTask, getTransition, linkParentIdForTask } from "../fetchers"
-import type { CreateTaskBody } from "../types"
-import { withToastMessages } from "@/lib/utils/with-toast-messages"
+import { addJiraComment, addJiraFileInTask, changeTaskStatus, createTask, getTransition } from "../fetchers"
 
-const TOAST_MESSAGE = {
-  success: "Задача успешно добавлена",
-  pending: "Добаление задачи",
-  error: "Ошибка добавления задачи"
-}
 
 export const useTasks = () => {
   return useMutation({
-    mutationFn: withToastMessages((data: CreateTaskBody) => createTask(data), TOAST_MESSAGE),
+    mutationFn: createTask,
   })
 }
 
@@ -29,9 +22,9 @@ export const useTransition = () => {
     mutationFn: ({taskId, formData}: {taskId: string, formData: FormData}) => addJiraFileInTask(taskId, formData )
   })
 
-  return { getTransition: mutateAsync, changeTaskStatus: changeTask, addFileInJiraTask };
-}
+  const {mutateAsync: addComment} = useMutation({
+    mutationFn: ({taskId, comment}: {taskId: string, comment: string}) => addJiraComment(taskId, comment)
+  })
 
-export const useEditParentId = () => useMutation({
-  mutationFn: (({ taskId, parentId }: {taskId: string, parentId: string}) => linkParentIdForTask(taskId, parentId))
-})
+  return { getTransition: mutateAsync, changeTaskStatus: changeTask, addFileInJiraTask, addComment };
+}
