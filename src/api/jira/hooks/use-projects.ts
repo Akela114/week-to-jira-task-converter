@@ -24,7 +24,6 @@ export const useAddJiraProject = () => {
   return useMutation({
     mutationFn: withToastMessages(createProject, TOAST_MESSAGES_CREATE),
     onSuccess: () => {
-      console.log('123')
       queryClient.invalidateQueries({
         queryKey: [JIRA_QUERY_KEYS.projectsList],
       });
