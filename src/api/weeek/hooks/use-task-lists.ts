@@ -66,7 +66,10 @@ export const useTasksList = ({
 							),
 							comments: await getWeeekComments(task.id)
 								.then((comments) => comments.map(
-									(comment) => transformWeekCommentToJira(comment.content.data.content))
+									(comment) => {
+										const transformedComment = transformWeekCommentToJira(comment.content.data.content)
+										return `*${comment.user.name} (WEEEK):*\n${transformedComment}`
+									})
 							),
 						})),
 					),
