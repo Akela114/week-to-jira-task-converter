@@ -239,3 +239,12 @@ export type GetProjectDetailsResponse = {
     }
   }[];
 }
+
+export interface JiraGetPriority {
+  description: string
+  iconUrl: string
+  id: string
+  name: string
+  self: string
+  statusColor: string
+}

@@ -9,6 +9,7 @@ import type {
 	StatusRoot,
 	TransitionForTasks,
 	User,
+	JiraGetPriority,
 } from "./types";
 
 export const getProjectsList = async () => {
@@ -103,5 +104,10 @@ export const addJiraComment = async (taskId: string, comment: string) => {
 	const { data } = await jiraAPIInstance.post(`/issue/${taskId}/comment`, {
 		body: comment
 	})
+	return data;
+}
+
+export const getAllPriority = async () => {
+	const { data } = await jiraAPIInstance.get<JiraGetPriority[]>('/priority');
 	return data;
 }

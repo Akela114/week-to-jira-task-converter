@@ -11,6 +11,7 @@ type AppStore = {
   jiraSubtasksTypeId?: string;
   statusesMap?: Record<string, string>;
   isReadyAddTasks?: boolean;
+  priorityMap?: Record<string, string>;
   setProjectId: (id: string) => void;
   resetProjectId: () => void;
   setBoardId: (id: string) => void;
@@ -28,6 +29,8 @@ type AppStore = {
   setTaskStatusesMap: (map: Record<string, string>) => void;
   resetTaskStatusesMap: () => void;
   setIsReadyAddTasks: (isReady: boolean) => void;
+  setPriorityMap: (map: Record<string, string>) => void;
+  resetPriorityMap: () => void;
 }
 
 export const useAppStore = create(
@@ -53,7 +56,9 @@ export const useAppStore = create(
       setJiraSubtasksTypeId: (id: string) => set({ statusesMap: undefined, isReadyAddTasks: false, jiraSubtasksTypeId: id }),
       resetJiraSubtasksTypeId: () => set({ statusesMap: undefined, isReadyAddTasks: false, jiraSubtasksTypeId: undefined }),
       setTaskStatusesMap: (map: Record<string, string>) => set({ statusesMap: map }),
-      resetTaskStatusesMap: () => set({ statusesMap: undefined, isReadyAddTasks: false }),
+      resetTaskStatusesMap: () => set({ statusesMap: undefined, isReadyAddTasks: false, priorityMap: undefined }),
+      setPriorityMap: (map: Record<string, string>) => set({ priorityMap: map }),
+      resetPriorityMap: () => set({ statusesMap: undefined, isReadyAddTasks: false }),
       setIsReadyAddTasks: (isReady: boolean) => set(({ isReadyAddTasks: isReady })),
     }),
     {

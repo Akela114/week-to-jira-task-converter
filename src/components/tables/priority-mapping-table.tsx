@@ -28,51 +28,52 @@ import {
 import { useAppStore } from "@/store/app-store";
 
 type UsersMappingTableProps = {
-	weekStatuses: {
+	weekPriority: {
 		id: string;
 		name?: string;
 	}[];
-	jiraStatuses: {
+	jiraPriority: {
 		id: string;
 		name?: string;
 	}[];
 };
 
-export const StatusesMappingTable: FC<UsersMappingTableProps> = ({
-	weekStatuses,
-	jiraStatuses,
+export const PriorityMappingTable: FC<UsersMappingTableProps> = ({
+	weekPriority,
+	jiraPriority,
 }) => {
 	const statusesMappingSchema = useMemo(
 		() =>
 			z.object(
-				weekStatuses.reduce((acc: Record<string, z.ZodString>, status) => {
-					acc[status.id] = z.string({ required_error: "Выберите статус" });
+				weekPriority.reduce((acc: Record<string, z.ZodString>, priority) => {
+					acc[priority.id] = z.string({ required_error: "Выберите статус" });
 					return acc;
 				}, {}),
 			),
-		[weekStatuses],
+		[weekPriority],
 	);
 
 	const form = useForm<z.infer<typeof statusesMappingSchema>>({
 		resolver: zodResolver(statusesMappingSchema),
 	});
 
-	const statusesMap = useAppStore((state) => state.statusesMap);
-	const resetStatusesMap = useAppStore((state) => state.resetTaskStatusesMap);
+	const setIsReadyAddTasks = useAppStore((state) => state.setIsReadyAddTasks);
+	const priorityMap = useAppStore((state) => state.priorityMap);
+	const resetPriorityMap = useAppStore((state) => state.resetPriorityMap);
 	useEffect(() => {
-		if (statusesMap) {
-			const result = statusesMappingSchema.safeParse(statusesMap);
+		if (priorityMap) {
+			const result = statusesMappingSchema.safeParse(priorityMap);
 			if (result.success) {
 				form.reset(result.data);
 			} else {
-				resetStatusesMap();
+				resetPriorityMap();
 			}
 		}
-	}, [statusesMap, form.reset, statusesMappingSchema, resetStatusesMap]);
+	}, [priorityMap, form.reset, statusesMappingSchema, resetPriorityMap]);
 
-	const setTaskStatusesMap = useAppStore((state) => state.setTaskStatusesMap);
+	const setTaskStatusesMap = useAppStore((state) => state.setPriorityMap);
 
-	const tableRows = weekStatuses.map((status) => (
+	const tableRows = weekPriority.map((status) => (
 		<TableRow key={status.id}>
 			<TableCell>{status.name}</TableCell>
 			<TableCell>
@@ -85,17 +86,17 @@ export const StatusesMappingTable: FC<UsersMappingTableProps> = ({
 								<Select
 									value={value}
 									onValueChange={(e) => {
+										setIsReadyAddTasks(false);
 										onChange(e);
-										resetStatusesMap();
 									}}
 								>
 									<SelectTrigger className="max-w-[300px]">
 										<SelectValue placeholder="Выберите статус в Jira" />
 									</SelectTrigger>
 									<SelectContent>
-										{jiraStatuses.map((status) => (
-											<SelectItem key={status.id} value={status.id}>
-												{status.name}
+										{jiraPriority.map((priority) => (
+											<SelectItem key={priority.id} value={priority.id}>
+												{priority.name}
 											</SelectItem>
 										))}
 									</SelectContent>
@@ -118,13 +119,17 @@ export const StatusesMappingTable: FC<UsersMappingTableProps> = ({
 				<Table className="border">
 					<TableHeader>
 						<TableRow>
-							<TableHead>Колонка в Weeek</TableHead>
-							<TableHead>Статус в Jira</TableHead>
+							<TableHead>Приоритет в Weeek</TableHead>
+							<TableHead>Приоритет в Jira</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>{tableRows}</TableBody>
 				</Table>
-				<Button type="submit" variant="outline">
+				<Button
+					type="submit"
+					variant="outline"
+					onClick={() => setIsReadyAddTasks(true)}
+				>
 					Подтвердить выбор
 				</Button>
 			</form>

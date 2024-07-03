@@ -29,7 +29,9 @@ export const JiraAddTasks = () => {
 		usersMap,
 		statusesMap,
 		jiraSubtasksTypeId,
+		priorityMap,
 	} = state;
+
 	const { data, status, error } = useTasksList({ projectId, boardId });
 
 	const onAddTasks = async () => {
@@ -40,14 +42,12 @@ export const JiraAddTasks = () => {
 			!jiraTasksTypeId ||
 			!usersMap ||
 			!statusesMap ||
-			!jiraSubtasksTypeId
+			!jiraSubtasksTypeId ||
+			!priorityMap
 		) {
-			toast(
-				"Не выбран проект или тип задачи в Jira или не сопоставлены пользователи или статусы",
-				{
-					type: "error",
-				},
-			);
+			toast("Не выбраны все обязательные поля", {
+				type: "error",
+			});
 			throw new Error("Не выбран проект или тип Задачи в Jira");
 		}
 
@@ -114,6 +114,7 @@ export const JiraAddTasks = () => {
 								id: weekTaskId,
 								parentId,
 								comments,
+								priority,
 							} = taskToAdd;
 
 							try {
@@ -152,6 +153,14 @@ export const JiraAddTasks = () => {
 											: {}),
 										// название задачи
 										summary: title,
+										// Приоритет
+										...(priority && priorityMap[priority]
+											? {
+													priority: {
+														id: priorityMap[priority],
+													},
+												}
+											: {}),
 									},
 								});
 								tasksMapping.set(weekTaskId, id);
@@ -177,17 +186,12 @@ export const JiraAddTasks = () => {
 									({ to }) => to.id === statusesMap[boardColumnId],
 								);
 
-								if (!targetTransition) {
-									toast(`Не удалось поменять статус задачи ${title}`, {
-										type: "error",
+								if (targetTransition) {
+									await changeTaskStatus({
+										categoryId: targetTransition.id,
+										taskId: id,
 									});
-									throw new Error(`Не удалось поменять статус задачи ${title}`);
 								}
-
-								await changeTaskStatus({
-									categoryId: targetTransition.id,
-									taskId: id,
-								});
 							} catch (err) {
 								logs.tasksInfo[weekTaskId] = {
 									jiraTaskId: id,
@@ -251,7 +255,7 @@ export const JiraAddTasks = () => {
 
 	return (
 		<Step
-			title="Шаг 10. Загрузка задача в Jira"
+			title="Шаг 11. Загрузка задача в Jira"
 			content={
 				<Interceptor status={status} errorMessage={error?.message}>
 					<Button
