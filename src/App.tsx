@@ -3,6 +3,7 @@ import { JiraProjectMemberRoleSelectionStep } from "./components/steps/jira-proj
 import { JiraProjectSelectionStep } from "./components/steps/jira-project-selection-step";
 import { JiraStatusesStep } from "./components/steps/jira-statuses-step";
 import { JiraSubtasksStatusesStep } from "./components/steps/jira-sutasks-statuses-step";
+import { PriorityMappingStep } from "./components/steps/priority-mapping-step";
 import { StatusesMappingStep } from "./components/steps/statuses-mapping-step";
 import { UsersMappingStep } from "./components/steps/users-mapping-step";
 import { WeekProjectSelectionStep } from "./components/steps/weeek-project-selection-step";
@@ -17,11 +18,12 @@ function App() {
 				<WeekBoardSelectionStep />
 				<WeekTaskFetchingStep />
 				<JiraProjectSelectionStep />
-				<JiraProjectMemberRoleSelectionStep />
-				<UsersMappingStep />
 				<JiraStatusesStep />
 				<JiraSubtasksStatusesStep />
+				<JiraProjectMemberRoleSelectionStep />
+				<UsersMappingStep />
 				<StatusesMappingStep />
+				<PriorityMappingStep />
 				<JiraAddTasks />
 			</div>
 		</div>

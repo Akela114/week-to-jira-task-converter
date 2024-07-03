@@ -9,6 +9,7 @@ import { useMemo, type ComponentProps } from "react";
 export const StatusesMappingStep = () => {
 	const jiraProjectId = useAppStore((state) => state.jiraProjectId);
 	const jiraTaskTypeID = useAppStore((state) => state.jiraTasksTypeId);
+	const usersMap = useAppStore((state) => state.usersMap);
 	const jiraSubtasksTypeId = useAppStore((state) => state.jiraSubtasksTypeId);
 	const projectId = useAppStore((state) => state.projectId);
 	const boardId = useAppStore((state) => state.boardId);
@@ -64,7 +65,7 @@ export const StatusesMappingStep = () => {
 					/>
 				</Interceptor>
 			}
-			isActive={Boolean(jiraTaskTypeID && jiraSubtasksTypeId)}
+			isActive={Boolean(usersMap)}
 		/>
 	);
 };

@@ -2,7 +2,7 @@ import { Step } from "@/shared/ui/step";
 import { useAppStore } from "@/store/app-store";
 import { Interceptor } from "../interceptor";
 import { useTasksList } from "@/api/weeek/hooks/use-task-lists";
-import { type ComponentProps, useMemo } from "react";
+import { type ComponentProps, useMemo, useEffect } from "react";
 import { useWorkspaceMembers } from "@/api/weeek/hooks/use-workspace-members";
 import { UsersMappingTable } from "../tables/users-mapping-table";
 import { useProjectUsersByRole } from "@/api/jira/hooks/use-project-users-by-role";
@@ -77,9 +77,37 @@ export const UsersMappingStep = () => {
 		[relatedWeekUsersIds, membersData],
 	);
 
+	const disabledTasksFields = useAppStore((state) => state.disabledTaskFields);
+	const disabledSubtasksFields = useAppStore(
+		(state) => state.disabledSubTaskFields,
+	);
+	const setUsersMap = useAppStore((state) => state.setUsersMap);
+	const isMappingNeeded = !["reporter", "assignee"].every((val) =>
+		[...(disabledSubtasksFields ?? []), ...(disabledTasksFields ?? [])]?.some(
+			(field) => field.id === val,
+		),
+	);
+
+	useEffect(() => {
+		if (
+			!isMappingNeeded &&
+			disabledSubtasksFields &&
+			disabledTasksFields &&
+			jiraRoleId
+		) {
+			setUsersMap({});
+		}
+	}, [
+		isMappingNeeded,
+		disabledSubtasksFields,
+		disabledTasksFields,
+		setUsersMap,
+		jiraRoleId,
+	]);
+
 	return (
 		<Step
-			title="Шаг 6. Сопоставление пользователей из Weeek пользователям Jira"
+			title="Шаг 8. Сопоставление пользователей из Weeek пользователям Jira"
 			content={
 				<Interceptor
 					status={globalStatus}
@@ -89,13 +117,17 @@ export const UsersMappingStep = () => {
 						userJiraError?.message
 					}
 				>
-					<UsersMappingTable
-						weekUsers={weeekUsers}
-						jiraUsers={jiraUsers ?? []}
-					/>
+					{isMappingNeeded ? (
+						<UsersMappingTable
+							weekUsers={weeekUsers}
+							jiraUsers={jiraUsers ?? []}
+						/>
+					) : (
+						<div>Сопоставление не требуется 😊</div>
+					)}
 				</Interceptor>
 			}
-			isActive={Boolean(jiraProjectId && jiraRoleId)}
+			isActive={Boolean(jiraRoleId)}
 		/>
 	);
 };

@@ -239,3 +239,28 @@ export type GetProjectDetailsResponse = {
     }
   }[];
 }
+
+export interface JiraGetPriority {
+  description: string
+  iconUrl: string
+  id: string
+  name: string
+  self: string
+  statusColor: string
+}
+
+export interface JiraProjectMeta {
+  fields: Field[]
+  maxResults: number
+  startAt: number
+  total: number
+}
+
+interface Field {
+  fieldId: string
+  hasDefaultValue: boolean
+  key: string
+  name: string
+  operations: string[]
+  required: boolean
+}

@@ -1,6 +1,5 @@
 import { useTasks, useTransition } from "@/api/jira/hooks/use-tasks";
 import { useTasksList } from "@/api/weeek/hooks/use-task-lists";
-import { cn } from "@/lib/utils/cn";
 import { Button } from "@/shared/ui/button";
 import { useAppStore } from "@/store/app-store";
 import { Interceptor } from "../interceptor";
@@ -21,7 +20,6 @@ export const JiraAddTasks = () => {
 	const state = useAppStore((state) => state);
 
 	const {
-		isReadyAddTasks,
 		boardId,
 		projectId,
 		jiraTasksTypeId,
@@ -29,8 +27,15 @@ export const JiraAddTasks = () => {
 		usersMap,
 		statusesMap,
 		jiraSubtasksTypeId,
+		priorityMap,
 	} = state;
+
 	const { data, status, error } = useTasksList({ projectId, boardId });
+
+	const disabledTasksFields = useAppStore((state) => state.disabledTaskFields);
+	const disabledSubtasksFields = useAppStore(
+		(state) => state.disabledSubTaskFields,
+	);
 
 	const onAddTasks = async () => {
 		const tasksMapping = new Map();
@@ -40,14 +45,12 @@ export const JiraAddTasks = () => {
 			!jiraTasksTypeId ||
 			!usersMap ||
 			!statusesMap ||
-			!jiraSubtasksTypeId
+			!jiraSubtasksTypeId ||
+			!priorityMap
 		) {
-			toast(
-				"Не выбран проект или тип задачи в Jira или не сопоставлены пользователи или статусы",
-				{
-					type: "error",
-				},
-			);
+			toast("Не выбраны все обязательные поля", {
+				type: "error",
+			});
 			throw new Error("Не выбран проект или тип Задачи в Jira");
 		}
 
@@ -65,6 +68,7 @@ export const JiraAddTasks = () => {
 			},
 			statusesMap,
 			usersMap,
+			priorityMap,
 			tasksInfo: {} as Record<
 				string,
 				| {
@@ -114,13 +118,20 @@ export const JiraAddTasks = () => {
 								id: weekTaskId,
 								parentId,
 								comments,
+								priority,
 							} = taskToAdd;
 
 							try {
 								const { id } = await addTask({
 									fields: {
 										// исполнитель
-										...(userId && usersMap[userId]
+										...(!(
+											(parentId
+												? disabledSubtasksFields
+												: disabledTasksFields) ?? []
+										).some((val) => val.id === "assignee") &&
+										userId &&
+										usersMap[userId]
 											? {
 													assignee: {
 														id: usersMap[userId],
@@ -128,7 +139,13 @@ export const JiraAddTasks = () => {
 												}
 											: {}),
 										// автор
-										...(authorId && usersMap[authorId]
+										...(!(
+											(parentId
+												? disabledSubtasksFields
+												: disabledTasksFields) ?? []
+										).some((val) => val.id === "reporter") &&
+										authorId &&
+										usersMap[authorId]
 											? {
 													reporter: {
 														id: usersMap[authorId],
@@ -152,6 +169,20 @@ export const JiraAddTasks = () => {
 											: {}),
 										// название задачи
 										summary: title,
+										// Приоритет
+										...(!(
+											(parentId
+												? disabledSubtasksFields
+												: disabledTasksFields) ?? []
+										).some((val) => val.id === "priority") &&
+										priority &&
+										priorityMap[priority]
+											? {
+													priority: {
+														id: priorityMap[priority],
+													},
+												}
+											: {}),
 									},
 								});
 								tasksMapping.set(weekTaskId, id);
@@ -177,17 +208,12 @@ export const JiraAddTasks = () => {
 									({ to }) => to.id === statusesMap[boardColumnId],
 								);
 
-								if (!targetTransition) {
-									toast(`Не удалось поменять статус задачи ${title}`, {
-										type: "error",
+								if (targetTransition) {
+									await changeTaskStatus({
+										categoryId: targetTransition.id,
+										taskId: id,
 									});
-									throw new Error(`Не удалось поменять статус задачи ${title}`);
 								}
-
-								await changeTaskStatus({
-									categoryId: targetTransition.id,
-									taskId: id,
-								});
 							} catch (err) {
 								logs.tasksInfo[weekTaskId] = {
 									jiraTaskId: id,
@@ -251,22 +277,19 @@ export const JiraAddTasks = () => {
 
 	return (
 		<Step
-			title="Шаг 10. Загрузка задача в Jira"
+			title="Шаг 11. Загрузка задача в Jira"
 			content={
 				<Interceptor status={status} errorMessage={error?.message}>
 					<Button
 						variant="default"
 						onClick={onAddTasks}
-						disabled={!isReadyAddTasks}
-						className={cn("cursor-pointer opacity-90", {
-							"opacity-30": !isReadyAddTasks,
-						})}
+						className="cursor-pointer opacity-90"
 					>
 						Добавить задачи
 					</Button>
 				</Interceptor>
 			}
-			isActive={isReadyAddTasks}
+			isActive={!!priorityMap}
 		/>
 	);
 };

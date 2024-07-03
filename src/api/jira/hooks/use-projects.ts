@@ -1,5 +1,5 @@
 import {  useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createProject, getProjectsList, getStatuses } from "../fetchers";
+import { createProject, getJiraProjectMeta, getProjectsList, getStatuses } from "../fetchers";
 import { withToastMessages } from "@/lib/utils/with-toast-messages";
 import { JIRA_QUERY_KEYS } from "@/lib/constants/query-keys";
 
@@ -34,9 +34,19 @@ export const useAddJiraProject = () => {
 export const useStatuses = (projectId: string | undefined) => {
   return useQuery({
     queryKey: [JIRA_QUERY_KEYS.projectStatuses, projectId] as const,
-    queryFn: () => (() => getStatuses(projectId as string))(),
+    queryFn: () => getStatuses(projectId as string),
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
     enabled: !!projectId
+  });
+}
+
+export const useJiraProjectMeta = (issueType: string | undefined, projectId: string | undefined) => {
+  return useQuery({
+    queryKey: [JIRA_QUERY_KEYS.projectStatuses, {projectId, issueType}],
+    queryFn: () => getJiraProjectMeta({issueType: issueType as string, projectId: projectId as string}),
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
+    enabled: !!issueType
   });
 }

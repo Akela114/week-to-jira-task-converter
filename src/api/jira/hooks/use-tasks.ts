@@ -1,10 +1,18 @@
-import { useMutation } from "@tanstack/react-query"
-import { addJiraComment, addJiraFileInTask, changeTaskStatus, createTask, getTransition } from "../fetchers"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { addJiraComment, addJiraFileInTask, changeTaskStatus, createTask, getAllPriority, getTransition } from "../fetchers"
+import { JIRA_QUERY_KEYS } from "@/lib/constants/query-keys"
 
 
 export const useTasks = () => {
   return useMutation({
     mutationFn: createTask,
+  })
+}
+
+export const useTaskPriority = () => {
+  return useQuery({
+    queryFn: getAllPriority,
+    queryKey: [JIRA_QUERY_KEYS.priority]
   })
 }
 
