@@ -10,6 +10,7 @@ import type {
 	TransitionForTasks,
 	User,
 	JiraGetPriority,
+	JiraProjectMeta,
 } from "./types";
 
 export const getProjectsList = async () => {
@@ -111,3 +112,10 @@ export const getAllPriority = async () => {
 	const { data } = await jiraAPIInstance.get<JiraGetPriority[]>('/priority');
 	return data;
 }
+
+export const getJiraProjectMeta = async (
+	{ projectId, issueType }: { projectId: string, issueType: string }
+) => {
+	const { data } = await jiraAPIInstance.get<JiraProjectMeta>(`/issue/createmeta/${projectId}/issuetypes/${issueType}`);
+	return data;
+ }
