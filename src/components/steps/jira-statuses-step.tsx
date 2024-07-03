@@ -9,7 +9,7 @@ import {
 	SelectValue,
 } from "@/shared/ui/select";
 import { useAppStore } from "@/store/app-store";
-import { useMemo } from "react";
+import { useEffect } from "react";
 
 const FIELDS_TO_CHECK = [
 	{ id: "priority", name: "приоритет" },
@@ -31,12 +31,23 @@ export const JiraStatusesStep = () => {
 		jiraProject,
 	);
 
-	const targetFieldsIds = projectMetaData?.fields
-		? FIELDS_TO_CHECK.filter(
-				(field) =>
-					!projectMetaData?.fields.some(({ fieldId }) => fieldId === field.id),
-			)
-		: [];
+	const disabledFields = useAppStore((state) => state.disabledTaskFields);
+	const setTasksDisabledFields = useAppStore(
+		(state) => state.setTasksDisabledFields,
+	);
+
+	useEffect(() => {
+		if (projectMetaData?.fields) {
+			setTasksDisabledFields(
+				FIELDS_TO_CHECK.filter(
+					(field) =>
+						!projectMetaData?.fields.some(
+							({ fieldId }) => fieldId === field.id,
+						),
+				),
+			);
+		}
+	}, [projectMetaData, setTasksDisabledFields]);
 
 	const { data, error, status } = useStatuses(jiraProject);
 
@@ -62,7 +73,7 @@ export const JiraStatusesStep = () => {
 						value={
 							data?.some((type) => type.id === jiraTasksTypeId)
 								? jiraTasksTypeId
-								: undefined
+								: ""
 						}
 					>
 						<SelectTrigger className="w-[300px]">
@@ -70,15 +81,12 @@ export const JiraStatusesStep = () => {
 						</SelectTrigger>
 						<SelectContent>{TypeSelectOptions}</SelectContent>
 					</Select>
-					{targetFieldsIds?.length > 0 && (
+					{disabledFields?.length ? (
 						<div className="text-red-700 opacity-50">
 							Для данного проекта и типа задач не будут установлены такие поля
-							как{" "}
-							{targetFieldsIds
-								.map(({ name }) => `"${name}"`)
-								.join(targetFieldsIds.length > 1 ? ", " : "")}
+							как {disabledFields.map(({ name }) => `"${name}"`).join(", ")}
 						</div>
-					)}
+					) : null}
 				</Interceptor>
 			}
 			title="Шаг 5. Выбор типа задач, который будет использован при создании задач в Jira"

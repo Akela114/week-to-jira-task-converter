@@ -11,6 +11,8 @@ type AppStore = {
   jiraSubtasksTypeId?: string;
   statusesMap?: Record<string, string>;
   priorityMap?: Record<string, string>;
+  disabledTaskFields?: { id: string; name: string; }[];
+  disabledSubTaskFields?: { id: string; name: string; }[];
   setProjectId: (id: string) => void;
   resetProjectId: () => void;
   setBoardId: (id: string) => void;
@@ -29,6 +31,8 @@ type AppStore = {
   resetTaskStatusesMap: () => void;
   setPriorityMap: (map: Record<string, string>) => void;
   resetPriorityMap: () => void;
+  setTasksDisabledFields: (data: { id: string, name: string }[]) => void;
+  setSubtasksDisabledFields: (data: { id: string, name: string }[]) => void;
 }
 
 const resetNextSteps = (step: number) => {
@@ -53,9 +57,11 @@ const resetNextSteps = (step: number) => {
   }
   if (step < 7) {
     values.jiraSubtasksTypeId = undefined;
+    values.disabledSubTaskFields = undefined;
   }
   if (step < 6) {
     values.jiraTasksTypeId = undefined;
+    values.disabledTaskFields = undefined;
   }
   if (step < 5) {
     values.jiraProjectId = undefined;
@@ -79,6 +85,8 @@ export const useAppStore = create(
       boardId: undefined,
       usersMap: undefined,
       isReadyAddTasks: false,
+      disabledTaskFields: undefined,
+      disabledSubTaskFields: undefined,
       setProjectId: (id: string) => set({ ...resetNextSteps(1), projectId: id }),
       resetProjectId: () => set({ ...resetNextSteps(1) }),
       setBoardId: (id: string) => set({ ...resetNextSteps(2), boardId: id, }),
@@ -97,6 +105,8 @@ export const useAppStore = create(
       resetTaskStatusesMap: () => set({ ...resetNextSteps(9) }),
       setPriorityMap: (map: Record<string, string>) => set({ ...resetNextSteps(10), priorityMap: map }),
       resetPriorityMap: () => set({ ...resetNextSteps(10) }),
+      setTasksDisabledFields: (data: { id: string, name: string }[]) => set({disabledTaskFields: data }),
+      setSubtasksDisabledFields: (data: { id: string, name: string }[]) => set({disabledSubTaskFields: data })
     }),
     {
       name: 'app-store',

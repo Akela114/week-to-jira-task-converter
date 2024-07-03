@@ -3,6 +3,7 @@ import { useAppStore } from "@/store/app-store";
 import { Interceptor } from "../interceptor";
 import { PriorityMappingTable } from "../tables/priority-mapping-table";
 import { useTaskPriority } from "@/api/jira/hooks/use-tasks";
+import { useEffect } from "react";
 
 type Priority = "0" | "1" | "2" | "3";
 type PriorityName = "Low" | "Medium" | "High" | "Hold";
@@ -22,6 +23,33 @@ export const PriorityMappingStep = () => {
 		error: jiraPriorityError,
 	} = useTaskPriority();
 
+	const disabledTasksFields = useAppStore((state) => state.disabledTaskFields);
+	const disabledSubtasksFields = useAppStore(
+		(state) => state.disabledSubTaskFields,
+	);
+	const setPriorityMap = useAppStore((state) => state.setPriorityMap);
+	const isMappingNeeded = [
+		...(disabledSubtasksFields ?? []),
+		...(disabledTasksFields ?? []),
+	]?.some((field) => !["priority"].includes(field.id));
+
+	useEffect(() => {
+		if (
+			!isMappingNeeded &&
+			disabledSubtasksFields &&
+			disabledTasksFields &&
+			statusesMap
+		) {
+			setPriorityMap({});
+		}
+	}, [
+		isMappingNeeded,
+		disabledSubtasksFields,
+		disabledTasksFields,
+		setPriorityMap,
+		statusesMap,
+	]);
+
 	return (
 		<Step
 			title="Шаг 10. Сопоставление приоритетов Weeek и Jira"
@@ -30,20 +58,24 @@ export const PriorityMappingStep = () => {
 					status={jiraPriorityStatus}
 					errorMessage={jiraPriorityError?.message}
 				>
-					<PriorityMappingTable
-						weekPriority={Object.entries(TaskPriorityMapping).map(
-							([id, name]) => ({
-								id: String(id),
-								name,
-							}),
-						)}
-						jiraPriority={
-							jiraAllPriorities?.map((priority) => ({
-								id: priority.id,
-								name: priority.name,
-							})) ?? []
-						}
-					/>
+					{isMappingNeeded ? (
+						<PriorityMappingTable
+							weekPriority={Object.entries(TaskPriorityMapping).map(
+								([id, name]) => ({
+									id: String(id),
+									name,
+								}),
+							)}
+							jiraPriority={
+								jiraAllPriorities?.map((priority) => ({
+									id: priority.id,
+									name: priority.name,
+								})) ?? []
+							}
+						/>
+					) : (
+						<div>Сопоставление не требуется 😊</div>
+					)}
 				</Interceptor>
 			}
 			isActive={!!statusesMap}

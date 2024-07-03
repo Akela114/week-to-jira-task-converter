@@ -1,6 +1,5 @@
 import { useTasks, useTransition } from "@/api/jira/hooks/use-tasks";
 import { useTasksList } from "@/api/weeek/hooks/use-task-lists";
-import { cn } from "@/lib/utils/cn";
 import { Button } from "@/shared/ui/button";
 import { useAppStore } from "@/store/app-store";
 import { Interceptor } from "../interceptor";
@@ -33,6 +32,11 @@ export const JiraAddTasks = () => {
 
 	const { data, status, error } = useTasksList({ projectId, boardId });
 
+	const disabledTasksFields = useAppStore((state) => state.disabledTaskFields);
+	const disabledSubtasksFields = useAppStore(
+		(state) => state.disabledSubTaskFields,
+	);
+
 	const onAddTasks = async () => {
 		const tasksMapping = new Map();
 		if (!data?.tasks) return;
@@ -64,6 +68,7 @@ export const JiraAddTasks = () => {
 			},
 			statusesMap,
 			usersMap,
+			priorityMap,
 			tasksInfo: {} as Record<
 				string,
 				| {
@@ -120,7 +125,13 @@ export const JiraAddTasks = () => {
 								const { id } = await addTask({
 									fields: {
 										// исполнитель
-										...(userId && usersMap[userId]
+										...(!(
+											(parentId
+												? disabledSubtasksFields
+												: disabledTasksFields) ?? []
+										).some((val) => val.id === "assignee") &&
+										userId &&
+										usersMap[userId]
 											? {
 													assignee: {
 														id: usersMap[userId],
@@ -128,7 +139,13 @@ export const JiraAddTasks = () => {
 												}
 											: {}),
 										// автор
-										...(authorId && usersMap[authorId]
+										...(!(
+											(parentId
+												? disabledSubtasksFields
+												: disabledTasksFields) ?? []
+										).some((val) => val.id === "reporter") &&
+										authorId &&
+										usersMap[authorId]
 											? {
 													reporter: {
 														id: usersMap[authorId],
@@ -153,7 +170,13 @@ export const JiraAddTasks = () => {
 										// название задачи
 										summary: title,
 										// Приоритет
-										...(priority && priorityMap[priority]
+										...(!(
+											(parentId
+												? disabledSubtasksFields
+												: disabledTasksFields) ?? []
+										).some((val) => val.id === "priority") &&
+										priority &&
+										priorityMap[priority]
 											? {
 													priority: {
 														id: priorityMap[priority],
