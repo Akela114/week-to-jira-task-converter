@@ -79,7 +79,7 @@ export const UsersMappingStep = () => {
 
 	return (
 		<Step
-			title="Шаг 6. Сопоставление пользователей из Weeek пользователям Jira"
+			title="Шаг 8. Сопоставление пользователей из Weeek пользователям Jira"
 			content={
 				<Interceptor
 					status={globalStatus}
@@ -95,7 +95,7 @@ export const UsersMappingStep = () => {
 					/>
 				</Interceptor>
 			}
-			isActive={Boolean(jiraProjectId && jiraRoleId)}
+			isActive={Boolean(jiraRoleId)}
 		/>
 	);
 };

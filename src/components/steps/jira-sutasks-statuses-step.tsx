@@ -55,7 +55,7 @@ export const JiraSubtasksStatusesStep = () => {
 					</Select>
 				</Interceptor>
 			}
-			title="Шаг 8. Выбор типа задач, который будет использован при создании подзадач в Jira"
+			title="Шаг 6. Выбор типа задач, который будет использован при создании подзадач в Jira"
 			isActive={Boolean(jiraTasksTypeId)}
 		/>
 	);

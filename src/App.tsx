@@ -18,10 +18,10 @@ function App() {
 				<WeekBoardSelectionStep />
 				<WeekTaskFetchingStep />
 				<JiraProjectSelectionStep />
-				<JiraProjectMemberRoleSelectionStep />
-				<UsersMappingStep />
 				<JiraStatusesStep />
 				<JiraSubtasksStatusesStep />
+				<JiraProjectMemberRoleSelectionStep />
+				<UsersMappingStep />
 				<StatusesMappingStep />
 				<PriorityMappingStep />
 				<JiraAddTasks />

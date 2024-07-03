@@ -21,7 +21,6 @@ export const JiraAddTasks = () => {
 	const state = useAppStore((state) => state);
 
 	const {
-		isReadyAddTasks,
 		boardId,
 		projectId,
 		jiraTasksTypeId,
@@ -261,16 +260,13 @@ export const JiraAddTasks = () => {
 					<Button
 						variant="default"
 						onClick={onAddTasks}
-						disabled={!isReadyAddTasks}
-						className={cn("cursor-pointer opacity-90", {
-							"opacity-30": !isReadyAddTasks,
-						})}
+						className="cursor-pointer opacity-90"
 					>
 						Добавить задачи
 					</Button>
 				</Interceptor>
 			}
-			isActive={isReadyAddTasks}
+			isActive={!!priorityMap}
 		/>
 	);
 };

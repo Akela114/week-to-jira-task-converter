@@ -12,7 +12,7 @@ import { useAppStore } from "@/store/app-store";
 
 export const JiraStatusesStep = () => {
 	const jiraProject = useAppStore((state) => state.jiraProjectId);
-	const usersMap = useAppStore((state) => state.usersMap);
+	const jiraProjectId = useAppStore((state) => state.jiraProjectId);
 	const jiraTasksTypeId = useAppStore((state) => state.jiraTasksTypeId);
 	const setJiraTasksTypeId = useAppStore((state) => state.setJiraTasksTypeId);
 	const resetJiraTasksTypeId = useAppStore(
@@ -53,8 +53,8 @@ export const JiraStatusesStep = () => {
 					</Select>
 				</Interceptor>
 			}
-			title="Шаг 7. Выбор типа задач, который будет использован при создании задач в Jira"
-			isActive={!!usersMap}
+			title="Шаг 5. Выбор типа задач, который будет использован при создании задач в Jira"
+			isActive={!!jiraProjectId}
 		/>
 	);
 };

@@ -46,7 +46,7 @@ export const PriorityMappingTable: FC<UsersMappingTableProps> = ({
 		() =>
 			z.object(
 				weekPriority.reduce((acc: Record<string, z.ZodString>, priority) => {
-					acc[priority.id] = z.string({ required_error: "Выберите статус" });
+					acc[priority.id] = z.string({ required_error: "Выберите приоритет" });
 					return acc;
 				}, {}),
 			),
@@ -57,7 +57,6 @@ export const PriorityMappingTable: FC<UsersMappingTableProps> = ({
 		resolver: zodResolver(statusesMappingSchema),
 	});
 
-	const setIsReadyAddTasks = useAppStore((state) => state.setIsReadyAddTasks);
 	const priorityMap = useAppStore((state) => state.priorityMap);
 	const resetPriorityMap = useAppStore((state) => state.resetPriorityMap);
 	useEffect(() => {
@@ -86,12 +85,11 @@ export const PriorityMappingTable: FC<UsersMappingTableProps> = ({
 								<Select
 									value={value}
 									onValueChange={(e) => {
-										setIsReadyAddTasks(false);
 										onChange(e);
 									}}
 								>
 									<SelectTrigger className="max-w-[300px]">
-										<SelectValue placeholder="Выберите статус в Jira" />
+										<SelectValue placeholder="Выберите приоритет в Jira" />
 									</SelectTrigger>
 									<SelectContent>
 										{jiraPriority.map((priority) => (
@@ -125,11 +123,7 @@ export const PriorityMappingTable: FC<UsersMappingTableProps> = ({
 					</TableHeader>
 					<TableBody>{tableRows}</TableBody>
 				</Table>
-				<Button
-					type="submit"
-					variant="outline"
-					onClick={() => setIsReadyAddTasks(true)}
-				>
+				<Button type="submit" variant="outline">
 					Подтвердить выбор
 				</Button>
 			</form>

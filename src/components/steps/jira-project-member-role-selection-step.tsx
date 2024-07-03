@@ -12,6 +12,8 @@ import { useProjectRoles } from "@/api/jira/hooks/use-project-roles";
 
 export const JiraProjectMemberRoleSelectionStep = () => {
 	const jiraProjectId = useAppStore((state) => state.jiraProjectId);
+	const jiraTaskTypeId = useAppStore((state) => state.jiraTasksTypeId);
+	const jiraSubtasksTypeId = useAppStore((state) => state.jiraSubtasksTypeId);
 
 	const { data, status, error } = useProjectRoles({ projectId: jiraProjectId });
 
@@ -38,7 +40,7 @@ export const JiraProjectMemberRoleSelectionStep = () => {
 
 	return (
 		<Step
-			title="Шаг 5. Выбор роли, пользователи которой могут создавать и выполнять задачи"
+			title="Шаг 7. Выбор роли, пользователи которой могут создавать и выполнять задачи"
 			content={
 				<Interceptor status={status} errorMessage={error?.message}>
 					<div className="flex gap-4 items-center">
@@ -60,7 +62,7 @@ export const JiraProjectMemberRoleSelectionStep = () => {
 					</div>
 				</Interceptor>
 			}
-			isActive={Boolean(jiraProjectId)}
+			isActive={Boolean(jiraTaskTypeId && jiraSubtasksTypeId)}
 		/>
 	);
 };
